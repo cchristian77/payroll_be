@@ -3,8 +3,8 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	api "github.com/cchristian77/payroll_be/entrypoint"
 	"github.com/cchristian77/payroll_be/util/config"
-	"github.com/cchristian77/payroll_be/util/database"
 	"github.com/cchristian77/payroll_be/util/logger"
 	"github.com/knadh/koanf/parsers/json"
 	"github.com/knadh/koanf/providers/file"
@@ -16,7 +16,7 @@ import (
 
 var k = koanf.New(".")
 
-type Server struct {
+type server struct {
 	DB     *sql.DB
 	GormDB *gorm.DB
 	Router *echo.Echo
@@ -40,25 +40,9 @@ func main() {
 	log := logger.Init()
 	defer log.Sync()
 
-	db := database.ConnectToDB()
-	if db == nil {
-		logger.Fatal("Can't connect to Postgres!")
-	}
+	router := api.InitRouter()
 
-	gormDB, err := database.OpenGormDB(db)
-	if err != nil {
-		logger.Fatal(fmt.Sprintf("gorm driver errror: %v", err))
-	}
-
-	app := Server{
-		DB:     db,
-		GormDB: gormDB,
-		Router: echo.New(),
-	}
-	defer app.DB.Close()
-
-	// Run application
-	app.Router.Logger.Fatal(
-		app.Router.Start(fmt.Sprintf(":%d", config.Env.App.Port)),
+	router.Logger.Fatal(
+		router.Start(fmt.Sprintf(":%d", config.Env.App.Port)),
 	)
 }

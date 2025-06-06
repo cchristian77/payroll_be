@@ -1,11 +1,13 @@
 package util
 
 import (
+	"errors"
 	"fmt"
 	"github.com/cchristian77/payroll_be/response"
 	sharedErrs "github.com/cchristian77/payroll_be/util/errors"
 	"github.com/cchristian77/payroll_be/util/logger"
 	"github.com/labstack/echo/v4"
+	"gorm.io/gorm"
 	"net/http"
 )
 
@@ -38,18 +40,20 @@ func getStatusCode(err error) int {
 		return http.StatusOK
 	}
 
-	switch err {
-	case sharedErrs.InternalServerErr:
+	var businessValidationErr sharedErrs.BusinessValidationErr
+
+	switch {
+	case errors.Is(err, sharedErrs.InternalServerErr):
 		return http.StatusInternalServerError
-	case sharedErrs.NotFoundErr:
+	case errors.Is(err, sharedErrs.NotFoundErr), errors.Is(err, gorm.ErrRecordNotFound):
 		return http.StatusNotFound
-	case sharedErrs.ConflictErr:
+	case errors.Is(err, sharedErrs.ConflictErr):
 		return http.StatusConflict
-	case sharedErrs.BadParamInputErr, sharedErrs.IncorrectCredentialErr:
+	case errors.Is(err, sharedErrs.BadParamInputErr), errors.Is(err, sharedErrs.IncorrectCredentialErr), errors.As(err, &businessValidationErr):
 		return http.StatusBadRequest
-	case sharedErrs.ForbiddenErr:
+	case errors.Is(err, sharedErrs.ForbiddenErr):
 		return http.StatusForbidden
-	case sharedErrs.UnauthorizedErr, sharedErrs.InvalidTokenErr, sharedErrs.ExpiredTokenErr:
+	case errors.Is(err, sharedErrs.UnauthorizedErr), errors.Is(err, sharedErrs.InvalidTokenErr), errors.Is(err, sharedErrs.ExpiredTokenErr):
 		return http.StatusUnauthorized
 	default:
 		return http.StatusInternalServerError

@@ -1,27 +1,23 @@
 package auth
 
 import (
-	"context"
-	"errors"
 	"github.com/cchristian77/payroll_be/domain"
 	"github.com/cchristian77/payroll_be/request"
 	"github.com/cchristian77/payroll_be/response"
 	"github.com/cchristian77/payroll_be/util/config"
 	sharedErrs "github.com/cchristian77/payroll_be/util/errors"
-	"github.com/cchristian77/payroll_be/util/token"
+	tokenMaker "github.com/cchristian77/payroll_be/util/token"
 	"github.com/google/uuid"
+	"github.com/labstack/echo/v4"
 	"golang.org/x/crypto/bcrypt"
-	"gorm.io/gorm"
 	"time"
 )
 
-func (b *base) Login(ctx context.Context, input *request.Login) (*response.Auth, error) {
+func (b *base) Login(ec echo.Context, input *request.Login) (*response.Auth, error) {
+	ctx := ec.Request().Context()
+
 	authUser, err := b.repository.FindUserByUsername(ctx, input.Username)
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, sharedErrs.IncorrectCredentialErr
-		}
-
 		return nil, err
 	}
 
@@ -33,7 +29,7 @@ func (b *base) Login(ctx context.Context, input *request.Login) (*response.Auth,
 	sessionID := uuid.New()
 	accessTokenDuration, _ := time.ParseDuration(config.Env.Auth.AccessTokenExpiration)
 
-	accessToken, payload, err := token.Get().Generate(sessionID, authUser.ID, accessTokenDuration)
+	accessToken, payload, err := tokenMaker.Get().Generate(sessionID, authUser.ID, accessTokenDuration)
 	if err != nil {
 		return nil, err
 	}
@@ -43,8 +39,8 @@ func (b *base) Login(ctx context.Context, input *request.Login) (*response.Auth,
 		AccessToken:          accessToken,
 		AccessTokenExpiresAt: time.Unix(payload.StandardClaims.ExpiresAt, 0),
 		AccessTokenCreatedAt: time.Unix(payload.StandardClaims.IssuedAt, 0),
-		UserAgent:            input.UserAgent,
-		ClientIP:             input.IPAddress,
+		UserAgent:            ec.Request().UserAgent(),
+		ClientIP:             ec.RealIP(),
 		IsRevoked:            false,
 	})
 	if err != nil {

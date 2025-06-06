@@ -1,10 +1,10 @@
-package controller
+package auth
 
 import (
-	"github.com/cchristian77/payroll_be/domain"
 	"github.com/cchristian77/payroll_be/request"
 	"github.com/cchristian77/payroll_be/response"
 	"github.com/cchristian77/payroll_be/service/auth"
+	"github.com/cchristian77/payroll_be/util"
 	"github.com/cchristian77/payroll_be/util/middleware"
 	"github.com/labstack/echo/v4"
 	"net/http"
@@ -19,14 +19,12 @@ func NewController(auth auth.Service) *Controller {
 }
 
 func (c *Controller) RegisterRoutes(router *echo.Echo) {
-	group := router.Group("/auth")
-	group.POST("/login", c.Login)
-	group.GET("/current_user", c.CurrentUser, middleware.GetAuthorization().Authenticate())
+	groupV1 := router.Group("/auth/v1")
+	groupV1.POST("/login", c.Login)
+	groupV1.GET("/current_user", c.CurrentUser, middleware.GetAuthorization().Authenticate())
 }
 
 func (c *Controller) Login(ec echo.Context) error {
-	ctx := ec.Request().Context()
-
 	var input request.Login
 
 	if err := ec.Bind(&input); err != nil {
@@ -37,10 +35,7 @@ func (c *Controller) Login(ec echo.Context) error {
 		return err
 	}
 
-	input.UserAgent = ec.Request().UserAgent()
-	input.IPAddress = ec.RealIP()
-
-	data, err := c.auth.Login(ctx, &input)
+	data, err := c.auth.Login(ec, &input)
 	if err != nil {
 		return err
 	}
@@ -49,7 +44,8 @@ func (c *Controller) Login(ec echo.Context) error {
 }
 
 func (c *Controller) CurrentUser(ec echo.Context) error {
-	authUser := ec.Get(middleware.AuthUserKey).(*domain.User)
+	authUser := util.EchoCntextAuthUser(ec)
+
 	return response.NewSuccessResponse(ec, http.StatusOK, response.User{
 		ID:       authUser.ID,
 		Username: authUser.Username,

@@ -4,17 +4,11 @@ import (
 	"fmt"
 	"github.com/cchristian77/payroll_be/domain/enums"
 	"github.com/cchristian77/payroll_be/service/auth"
+	"github.com/cchristian77/payroll_be/util"
 	sharedErrs "github.com/cchristian77/payroll_be/util/errors"
 	"github.com/labstack/echo/v4"
 	"net/http"
 	"strings"
-)
-
-const (
-	authHeaderKey  = "authorization"
-	authTypeBearer = "bearer"
-	AuthPayloadKey = "auth_payload"
-	AuthUserKey    = "auth_user"
 )
 
 var authMiddleware *Authorization
@@ -50,9 +44,7 @@ func (a *Authorization) Authenticate() echo.MiddlewareFunc {
 func (a *Authorization) authenticationWithRoles(allowedRoles ...string) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(ec echo.Context) error {
-			ctx := ec.Request().Context()
-
-			authHeader := ec.Request().Header.Get(authHeaderKey)
+			authHeader := ec.Request().Header.Get(util.AuthHeaderKey)
 			if authHeader == "" {
 				return sharedErrs.UnauthorizedErr
 			}
@@ -63,20 +55,20 @@ func (a *Authorization) authenticationWithRoles(allowedRoles ...string) echo.Mid
 			}
 
 			authorizationType := strings.ToLower(authFields[0])
-			if authorizationType != authTypeBearer {
+			if authorizationType != util.AuthTypeBearer {
 				return echo.NewHTTPError(http.StatusUnauthorized, fmt.Sprintf("unsupported authorization type %s", authorizationType))
 			}
 
 			bearerToken := authFields[1]
 
-			authUser, err := a.authService.Authenticate(ctx, bearerToken)
+			authUser, err := a.authService.Authenticate(ec, bearerToken)
 			if err != nil {
 				return err
 			}
 
 			for _, allowedRole := range allowedRoles {
 				if authUser.Role == allowedRole {
-					ec.Set(AuthUserKey, authUser)
+					ec.Set(util.AuthUserKey, authUser)
 					return next(ec)
 				}
 			}

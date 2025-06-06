@@ -1,17 +1,14 @@
-package auth
+package attendance
 
 import (
-	"github.com/cchristian77/payroll_be/domain"
 	"github.com/cchristian77/payroll_be/repository"
-	"github.com/cchristian77/payroll_be/request"
 	"github.com/cchristian77/payroll_be/response"
 	"github.com/labstack/echo/v4"
 )
 
 type Service interface {
-	Authenticate(ctx echo.Context, token string) (*domain.User, error)
-	Login(ctx echo.Context, input *request.Login) (*response.Auth, error)
-	Logout(ctx echo.Context, sessionID uint64) error
+	CheckIn(ec echo.Context) (*response.Attendance, error)
+	CheckOut(ec echo.Context) (*response.Attendance, error)
 }
 
 type base struct {

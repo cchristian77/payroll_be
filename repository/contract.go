@@ -20,7 +20,12 @@ type Repository interface {
 
 	// Attendance
 	FindAttendanceByUserIDAndDate(ctx context.Context, userID uint64, date time.Time) (*domain.Attendance, error)
-	FindAttendanceByID(ctx context.Context, id uint64) (*domain.Attendance, error)
+	FindAttendanceByIDAndUserID(ctx context.Context, id, userID uint64) (*domain.Attendance, error)
 	CreateAttendance(ctx context.Context, data *domain.Attendance) (*domain.Attendance, error)
 	UpdateAttendance(ctx context.Context, data *domain.Attendance) error
+
+	// Overtime
+	FindOvertimeByUserIDAndDate(ctx context.Context, userID uint64, date time.Time) (*domain.Overtime, error)
+	FindOvertimeByIDAndUserID(ctx context.Context, id, userID uint64) (*domain.Overtime, error)
+	UpsertOvertime(ctx context.Context, data *domain.Overtime) (*domain.Overtime, error)
 }

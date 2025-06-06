@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/cchristian77/payroll_be/domain"
+	"github.com/cchristian77/payroll_be/shared/external/database"
 	"github.com/cchristian77/payroll_be/util/logger"
 	"gorm.io/gorm/clause"
 )
@@ -25,7 +26,9 @@ func (r *repo) CreateSession(ctx context.Context, data *domain.Session) (*domain
 func (r *repo) FindSessionByID(ctx context.Context, id uint64) (*domain.Session, error) {
 	var result *domain.Session
 
-	err := r.DB.WithContext(ctx).
+	db, _ := database.ConnFromContext(ctx, r.DB)
+
+	err := db.WithContext(ctx).
 		First(&result, id).
 		Error
 	if err != nil {
@@ -38,7 +41,9 @@ func (r *repo) FindSessionByID(ctx context.Context, id uint64) (*domain.Session,
 }
 
 func (r *repo) DeleteSessionByID(ctx context.Context, id uint64) error {
-	err := r.DB.WithContext(ctx).
+	db, _ := database.ConnFromContext(ctx, r.DB)
+
+	err := db.WithContext(ctx).
 		Where("id = ?", id).
 		Delete(&domain.Session{}).
 		Error
@@ -52,8 +57,9 @@ func (r *repo) DeleteSessionByID(ctx context.Context, id uint64) error {
 }
 
 func (r *repo) RevokeSessionByID(ctx context.Context, id uint64) error {
-	err := r.DB.
-		WithContext(ctx).
+	db, _ := database.ConnFromContext(ctx, r.DB)
+
+	err := db.WithContext(ctx).
 		Model(&domain.Session{}).
 		Where("id = ?", id).
 		Update("is_revoked", true).

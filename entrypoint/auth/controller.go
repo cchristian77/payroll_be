@@ -28,7 +28,7 @@ func (c *Controller) Login(ec echo.Context) error {
 	var input request.Login
 
 	if err := ec.Bind(&input); err != nil {
-		return response.NewErrorResponse(ec, http.StatusBadRequest, "Invalid request body", err)
+		return response.NewErrorResponse(ec, http.StatusUnprocessableEntity, "Invalid request body", err)
 	}
 
 	if err := ec.Validate(input); err != nil {

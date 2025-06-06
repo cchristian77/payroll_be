@@ -4,9 +4,11 @@ import (
 	"fmt"
 	attendanceEntrypoint "github.com/cchristian77/payroll_be/entrypoint/attendance"
 	authEntrypoint "github.com/cchristian77/payroll_be/entrypoint/auth"
+	overtimeEntrypoint "github.com/cchristian77/payroll_be/entrypoint/overtime"
 	"github.com/cchristian77/payroll_be/repository"
-	attendanceService "github.com/cchristian77/payroll_be/service/attendance"
-	authService "github.com/cchristian77/payroll_be/service/auth"
+	"github.com/cchristian77/payroll_be/service/attendance"
+	"github.com/cchristian77/payroll_be/service/auth"
+	"github.com/cchristian77/payroll_be/service/overtime"
 	"github.com/cchristian77/payroll_be/shared/external/database"
 	"github.com/cchristian77/payroll_be/util"
 	"github.com/cchristian77/payroll_be/util/logger"
@@ -69,22 +71,29 @@ func registerRoutes(router *echo.Echo) {
 	repository := repository.NewRepository(gormDB)
 
 	// Initialize all service layers
-	authService, err := authService.NewService(repository)
+	authService, err := auth.NewService(repository)
 	if err != nil {
 		logger.Fatal(fmt.Sprintf("auth service initialization error: %v", err))
 	}
 
-	attendanceService, err := attendanceService.NewService(repository)
+	attendanceService, err := attendance.NewService(repository)
 	if err != nil {
 		logger.Fatal(fmt.Sprintf("attendance service initialization error: %v", err))
+	}
+
+	overtimeService, err := overtime.NewService(repository)
+	if err != nil {
+		logger.Fatal(fmt.Sprintf("overtime service initialization error: %v", err))
 	}
 
 	utilMiddleware.InitAuthorization(authService)
 
 	authController := authEntrypoint.NewController(authService)
 	attendanceController := attendanceEntrypoint.NewController(attendanceService)
+	overtimeController := overtimeEntrypoint.NewController(overtimeService)
 
 	// register all routes
 	authController.RegisterRoutes(router)
 	attendanceController.RegisterRoutes(router)
+	overtimeController.RegisterRoutes(router)
 }

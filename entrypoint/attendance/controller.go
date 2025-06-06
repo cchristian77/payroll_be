@@ -17,7 +17,7 @@ func NewController(attendance attendance.Service) *Controller {
 }
 
 func (c *Controller) RegisterRoutes(router *echo.Echo) {
-	groupV1 := router.Group("/attendance/v1", middleware.GetAuthorization().Authenticate())
+	groupV1 := router.Group("/attendances/v1", middleware.GetAuthorization().Authenticate())
 	groupV1.POST("/check_in", c.CheckIn)
 	groupV1.POST("/check_out", c.CheckOut)
 }

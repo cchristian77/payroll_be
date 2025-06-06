@@ -2,7 +2,6 @@ package helper
 
 import (
 	"errors"
-	"fmt"
 )
 
 // HTTP ERROR
@@ -40,7 +39,7 @@ type BusinessValidationErr struct {
 }
 
 func (e BusinessValidationErr) Error() string {
-	return fmt.Sprintf("%s is invalid", e.Message)
+	return e.Message
 }
 
 func NewBusinessValidationErr(message string) error {

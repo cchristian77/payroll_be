@@ -4,15 +4,15 @@ import (
 	"errors"
 	"github.com/cchristian77/payroll_be/domain"
 	sharedErrs "github.com/cchristian77/payroll_be/util/errors"
-	"github.com/cchristian77/payroll_be/util/token"
+	tokenMaker "github.com/cchristian77/payroll_be/util/token"
 	"github.com/labstack/echo/v4"
 	"gorm.io/gorm"
 )
 
-func (b base) Authenticate(ec echo.Context, accessToken string) (*domain.User, error) {
+func (b *base) Authenticate(ec echo.Context, accessToken string) (*domain.User, error) {
 	ctx := ec.Request().Context()
 
-	payload, err := token.Get().Verify(accessToken)
+	payload, err := tokenMaker.Get().Verify(accessToken)
 	if err != nil {
 		return nil, err
 	}

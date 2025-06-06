@@ -12,7 +12,7 @@ import (
 	"time"
 )
 
-func (b base) CheckOut(ec echo.Context) (*response.Attendance, error) {
+func (b *base) CheckOut(ec echo.Context) (*response.Attendance, error) {
 	ctx := ec.Request().Context()
 	authUser := util.EchoCntextAuthUser(ec)
 
@@ -29,7 +29,7 @@ func (b base) CheckOut(ec echo.Context) (*response.Attendance, error) {
 
 	if attendance.CheckOut != nil {
 		return nil, sharedErrs.NewBusinessValidationErr(
-			fmt.Sprintf("You have already checked in at %s", attendance.CheckIn.Format("2006-01-02 15:04:05")),
+			fmt.Sprintf("You have already checked out at %s", attendance.CheckOut.Format(time.DateTime)),
 		)
 	}
 
@@ -45,7 +45,7 @@ func (b base) CheckOut(ec echo.Context) (*response.Attendance, error) {
 		return nil, err
 	}
 
-	attendance, err = b.repository.FindAttendanceByID(ctx, attendance.ID)
+	attendance, err = b.repository.FindAttendanceByIDAndUserID(ctx, attendance.ID, authUser.ID)
 	if err != nil {
 		return nil, err
 	}

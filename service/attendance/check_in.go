@@ -12,7 +12,7 @@ import (
 	"time"
 )
 
-func (b base) CheckIn(ec echo.Context) (*response.Attendance, error) {
+func (b *base) CheckIn(ec echo.Context) (*response.Attendance, error) {
 	ctx := ec.Request().Context()
 	authUser := util.EchoCntextAuthUser(ec)
 
@@ -25,7 +25,7 @@ func (b base) CheckIn(ec echo.Context) (*response.Attendance, error) {
 
 	if attendanceExists != nil {
 		return nil, sharedErrs.NewBusinessValidationErr(
-			fmt.Sprintf("You have already checked in at %s", attendanceExists.CheckIn.Format("2006-01-02 15:04:05")),
+			fmt.Sprintf("You have already checked in %s", attendanceExists.CheckIn.Format(time.DateTime)),
 		)
 	}
 

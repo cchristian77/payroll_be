@@ -28,4 +28,8 @@ type Repository interface {
 	FindOvertimeByUserIDAndDate(ctx context.Context, userID uint64, date time.Time) (*domain.Overtime, error)
 	FindOvertimeByIDAndUserID(ctx context.Context, id, userID uint64) (*domain.Overtime, error)
 	UpsertOvertime(ctx context.Context, data *domain.Overtime) (*domain.Overtime, error)
+
+	// Reimbursement
+	FindReimbursementByIDAndUserID(ctx context.Context, id, userID uint64) (*domain.Reimbursement, error)
+	UpsertReimbursement(ctx context.Context, data *domain.Reimbursement) (*domain.Reimbursement, error)
 }

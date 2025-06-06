@@ -1,29 +1,29 @@
-package overtime
+package reimbursement
 
 import (
 	"github.com/cchristian77/payroll_be/request"
 	"github.com/cchristian77/payroll_be/response"
-	"github.com/cchristian77/payroll_be/service/overtime"
+	"github.com/cchristian77/payroll_be/service/reimbursement"
 	"github.com/cchristian77/payroll_be/util/middleware"
 	"github.com/labstack/echo/v4"
 	"net/http"
 )
 
 type Controller struct {
-	overtime overtime.Service
+	reimbursement reimbursement.Service
 }
 
-func NewController(overtime overtime.Service) *Controller {
-	return &Controller{overtime: overtime}
+func NewController(reimbursement reimbursement.Service) *Controller {
+	return &Controller{reimbursement: reimbursement}
 }
 
 func (c *Controller) RegisterRoutes(router *echo.Echo) {
-	groupV1 := router.Group("/overtimes/v1", middleware.GetAuthorization().Authenticate())
+	groupV1 := router.Group("/reimbursements/v1", middleware.GetAuthorization().Authenticate())
 	groupV1.POST("", c.Upsert)
 }
 
 func (c *Controller) Upsert(ec echo.Context) error {
-	var input request.UpsertOvertime
+	var input request.UpsertReimbursement
 
 	if err := ec.Bind(&input); err != nil {
 		return response.NewErrorResponse(ec, http.StatusUnprocessableEntity, "Invalid request body", err)
@@ -33,7 +33,7 @@ func (c *Controller) Upsert(ec echo.Context) error {
 		return err
 	}
 
-	data, err := c.overtime.Upsert(ec, &input)
+	data, err := c.reimbursement.Upsert(ec, &input)
 	if err != nil {
 		return err
 	}

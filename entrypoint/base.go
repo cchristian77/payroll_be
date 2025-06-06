@@ -5,10 +5,12 @@ import (
 	attendanceEntrypoint "github.com/cchristian77/payroll_be/entrypoint/attendance"
 	authEntrypoint "github.com/cchristian77/payroll_be/entrypoint/auth"
 	overtimeEntrypoint "github.com/cchristian77/payroll_be/entrypoint/overtime"
+	reimbursementEntrypoint "github.com/cchristian77/payroll_be/entrypoint/reimbursement"
 	"github.com/cchristian77/payroll_be/repository"
 	"github.com/cchristian77/payroll_be/service/attendance"
 	"github.com/cchristian77/payroll_be/service/auth"
 	"github.com/cchristian77/payroll_be/service/overtime"
+	"github.com/cchristian77/payroll_be/service/reimbursement"
 	"github.com/cchristian77/payroll_be/shared/external/database"
 	"github.com/cchristian77/payroll_be/util"
 	"github.com/cchristian77/payroll_be/util/logger"
@@ -58,6 +60,7 @@ func registerRoutes(router *echo.Echo) {
 		})
 	})
 
+	// initialize DB
 	db := database.ConnectToDB()
 	if db == nil {
 		logger.Fatal("Can't connect to Postgres!")
@@ -86,14 +89,22 @@ func registerRoutes(router *echo.Echo) {
 		logger.Fatal(fmt.Sprintf("overtime service initialization error: %v", err))
 	}
 
+	reimbursementService, err := reimbursement.NewService(repository)
+	if err != nil {
+		logger.Fatal(fmt.Sprintf("reimbursement service initialization error: %v", err))
+	}
+
 	utilMiddleware.InitAuthorization(authService)
 
+	// initialize all controller layers
 	authController := authEntrypoint.NewController(authService)
 	attendanceController := attendanceEntrypoint.NewController(attendanceService)
 	overtimeController := overtimeEntrypoint.NewController(overtimeService)
+	reimbursementController := reimbursementEntrypoint.NewController(reimbursementService)
 
 	// register all routes
 	authController.RegisterRoutes(router)
 	attendanceController.RegisterRoutes(router)
 	overtimeController.RegisterRoutes(router)
+	reimbursementController.RegisterRoutes(router)
 }

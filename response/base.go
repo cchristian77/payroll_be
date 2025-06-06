@@ -5,7 +5,7 @@ import (
 )
 
 type Success struct {
-	Data    any    `json:"data"`
+	Data    any    `json:"data,omitempty"`
 	Message string `json:"message"`
 }
 

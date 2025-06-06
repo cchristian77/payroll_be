@@ -1,0 +1,12 @@
+package domain
+
+import "time"
+
+type Attendance struct {
+	BaseModel
+
+	UserID   uint64
+	Date     time.Time
+	CheckIn  time.Time
+	CheckOut *time.Time
+}

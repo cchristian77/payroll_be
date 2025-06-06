@@ -35,7 +35,7 @@ func (r *repo) FindOvertimeByIDAndUserID(ctx context.Context, id, userID uint64)
 
 	err := db.WithContext(ctx).
 		Where("id = ? AND user_id = ?", id, userID).
-		First(&data, id).
+		First(&data).
 		Error
 	if err != nil {
 		logger.Error(fmt.Sprintf("[REPOSITORY] Failed on find overtime by id and user id : %v", err))

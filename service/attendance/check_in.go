@@ -31,8 +31,8 @@ func (b *base) CheckIn(ec echo.Context) (*response.Attendance, error) {
 
 	attendance, err := b.repository.CreateAttendance(ctx, &domain.Attendance{
 		BaseModel: domain.BaseModel{
-			CreatedAt: time.Now(),
-			UpdatedAt: time.Now(),
+			CreatedAt: now,
+			UpdatedAt: now,
 			CreatedBy: authUser.ID,
 		},
 		UserID:   authUser.ID,

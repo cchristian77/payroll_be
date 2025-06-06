@@ -1,6 +1,9 @@
 package helper
 
-import "errors"
+import (
+	"errors"
+	"fmt"
+)
 
 // HTTP ERROR
 var (
@@ -31,3 +34,17 @@ var (
 	InvalidTokenErr = errors.New("token is invalid")
 	ExpiredTokenErr = errors.New("token has expired")
 )
+
+type BusinessValidationErr struct {
+	Message string
+}
+
+func (e BusinessValidationErr) Error() string {
+	return fmt.Sprintf("%s is invalid", e.Message)
+}
+
+func NewBusinessValidationErr(message string) error {
+	return BusinessValidationErr{
+		Message: message,
+	}
+}

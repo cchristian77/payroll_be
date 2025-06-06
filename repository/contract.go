@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"github.com/cchristian77/payroll_be/domain"
+	"time"
 )
 
 type Repository interface {
@@ -14,7 +15,12 @@ type Repository interface {
 	RevokeSessionByID(ctx context.Context, id uint64) error
 
 	// User
-	CreateUser(ctx context.Context, data *domain.User) (*domain.User, error)
 	FindUserByUsername(ctx context.Context, username string) (*domain.User, error)
 	FindUserByID(ctx context.Context, id uint64) (*domain.User, error)
+
+	// Attendance
+	FindAttendanceByUserIDAndDate(ctx context.Context, userID uint64, date time.Time) (*domain.Attendance, error)
+	FindAttendanceByID(ctx context.Context, id uint64) (*domain.Attendance, error)
+	CreateAttendance(ctx context.Context, data *domain.Attendance) (*domain.Attendance, error)
+	UpdateAttendance(ctx context.Context, data *domain.Attendance) error
 }

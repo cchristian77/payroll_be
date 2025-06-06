@@ -2,11 +2,13 @@ package api
 
 import (
 	"fmt"
-	"github.com/cchristian77/payroll_be/entrypoint/auth"
+	attendanceEntrypoint "github.com/cchristian77/payroll_be/entrypoint/attendance"
+	authEntrypoint "github.com/cchristian77/payroll_be/entrypoint/auth"
 	"github.com/cchristian77/payroll_be/repository"
-	"github.com/cchristian77/payroll_be/service/auth"
+	attendanceService "github.com/cchristian77/payroll_be/service/attendance"
+	authService "github.com/cchristian77/payroll_be/service/auth"
+	"github.com/cchristian77/payroll_be/shared/external/database"
 	"github.com/cchristian77/payroll_be/util"
-	"github.com/cchristian77/payroll_be/util/database"
 	"github.com/cchristian77/payroll_be/util/logger"
 	utilMiddleware "github.com/cchristian77/payroll_be/util/middleware"
 	"github.com/labstack/echo/v4"
@@ -66,13 +68,23 @@ func registerRoutes(router *echo.Echo) {
 
 	repository := repository.NewRepository(gormDB)
 
-	authService, err := auth.NewService(repository)
+	// Initialize all service layers
+	authService, err := authService.NewService(repository)
 	if err != nil {
-		logger.Fatal(fmt.Sprintf("service error: %v", err))
+		logger.Fatal(fmt.Sprintf("auth service initialization error: %v", err))
+	}
+
+	attendanceService, err := attendanceService.NewService(repository)
+	if err != nil {
+		logger.Fatal(fmt.Sprintf("attendance service initialization error: %v", err))
 	}
 
 	utilMiddleware.InitAuthorization(authService)
 
-	authController := controller.NewController(authService)
+	authController := authEntrypoint.NewController(authService)
+	attendanceController := attendanceEntrypoint.NewController(attendanceService)
+
+	// register all routes
 	authController.RegisterRoutes(router)
+	attendanceController.RegisterRoutes(router)
 }

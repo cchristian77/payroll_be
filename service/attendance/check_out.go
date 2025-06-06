@@ -1,0 +1,61 @@
+package attendance
+
+import (
+	"errors"
+	"fmt"
+	"github.com/cchristian77/payroll_be/domain"
+	"github.com/cchristian77/payroll_be/response"
+	"github.com/cchristian77/payroll_be/util"
+	sharedErrs "github.com/cchristian77/payroll_be/util/errors"
+	"github.com/labstack/echo/v4"
+	"gorm.io/gorm"
+	"time"
+)
+
+func (b base) CheckOut(ec echo.Context) (*response.Attendance, error) {
+	ctx := ec.Request().Context()
+	authUser := util.EchoCntextAuthUser(ec)
+
+	now := time.Now()
+
+	attendance, err := b.repository.FindAttendanceByUserIDAndDate(ctx, authUser.ID, now)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, sharedErrs.NotFoundErr
+		}
+
+		return nil, err
+	}
+
+	if attendance.CheckOut != nil {
+		return nil, sharedErrs.NewBusinessValidationErr(
+			fmt.Sprintf("You have already checked in at %s", attendance.CheckIn.Format("2006-01-02 15:04:05")),
+		)
+	}
+
+	err = b.repository.UpdateAttendance(ctx, &domain.Attendance{
+		BaseModel: domain.BaseModel{
+			ID:        attendance.ID,
+			UpdatedAt: now,
+			UpdatedBy: &authUser.ID,
+		},
+		CheckOut: &now,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	attendance, err = b.repository.FindAttendanceByID(ctx, attendance.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	return &response.Attendance{
+		AttendanceID: attendance.ID,
+		CreatedAt:    attendance.CreatedAt,
+		UpdatedAt:    attendance.UpdatedAt,
+		Date:         attendance.Date,
+		CheckIn:      attendance.CheckIn,
+		CheckOut:     &now,
+	}, nil
+}

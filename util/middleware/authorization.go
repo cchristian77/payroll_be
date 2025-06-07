@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"github.com/cchristian77/payroll_be/domain/enums"
 	"github.com/cchristian77/payroll_be/service/auth"
-	"github.com/cchristian77/payroll_be/util"
 	sharedErrs "github.com/cchristian77/payroll_be/util/errors"
+	"github.com/cchristian77/payroll_be/util/logger"
 	"github.com/labstack/echo/v4"
 	"net/http"
 	"strings"
@@ -66,14 +66,17 @@ func (a *Authorization) authenticationWithRoles(allowedRoles ...string) echo.Mid
 
 			bearerToken := authFields[1]
 
-			authUser, err := a.authService.Authenticate(ec, bearerToken)
+			authUser, payload, err := a.authService.Authenticate(ec, bearerToken)
 			if err != nil {
 				return err
 			}
 
 			for _, allowedRole := range allowedRoles {
 				if authUser.Role == allowedRole {
-					ec.Set(util.AuthUserKey, authUser)
+					logger.Info(fmt.Sprintf("payload ID %s", payload.ID))
+					ec.Set(enums.AuthUserCtxKey, authUser)
+					ec.Set(enums.SessionIDCtxKey, payload.ID.String())
+
 					return next(ec)
 				}
 			}

@@ -11,3 +11,9 @@ const (
 	UserWorkDays           uint64 = 20
 	UserOvertimeMultiplier uint64 = 2
 )
+
+// Authorization Keys
+const (
+	AuthUserCtxKey  = "auth_user"
+	SessionIDCtxKey = "session_id"
+)

@@ -2,6 +2,7 @@ package reimbursement
 
 import (
 	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/cchristian77/payroll_be/domain/enums"
 	"github.com/cchristian77/payroll_be/repository"
 	"github.com/cchristian77/payroll_be/util/mock"
 	"github.com/labstack/echo/v4"
@@ -48,7 +49,7 @@ func (suite *ReimbursementServiceTestSuite) Before(t *testing.T) {
 	var err error
 
 	suite.ec = mock.NewEchoContext()
-	suite.ec.Set("auth_user", mock.InitUserDomain())
+	suite.ec.Set(enums.AuthUserCtxKey, mock.InitUserDomain())
 	suite.repo = repository.NewMockRepository(ctrl)
 	suite.writeDB, suite.sqlMock, err = mock.NewMockDB()
 	if err != nil {

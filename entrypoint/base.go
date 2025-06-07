@@ -97,10 +97,12 @@ func registerRoutes(router *echo.Echo) {
 	if err != nil {
 		logger.Fatal(fmt.Sprintf("reimbursement service initialization error: %v", err))
 	}
+
 	payrollPeriodService, err := payrollPeriod.NewService(repository, gormDB)
 	if err != nil {
 		logger.Fatal(fmt.Sprintf("payroll period service initialization error: %v", err))
 	}
+
 	payslipService, err := payslip.NewService(repository, gormDB)
 	if err != nil {
 		logger.Fatal(fmt.Sprintf("payslip.go service initialization error: %v", err))

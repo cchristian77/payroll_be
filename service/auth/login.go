@@ -36,12 +36,12 @@ func (b *base) Login(ec echo.Context, input *request.Login) (*response.Auth, err
 
 	_, err = b.repository.CreateSession(ctx, &domain.Session{
 		UserID:               authUser.ID,
+		SessionID:            payload.ID,
 		AccessToken:          accessToken,
 		AccessTokenExpiresAt: time.Unix(payload.StandardClaims.ExpiresAt, 0),
 		AccessTokenCreatedAt: time.Unix(payload.StandardClaims.IssuedAt, 0),
 		UserAgent:            ec.Request().UserAgent(),
 		ClientIP:             ec.RealIP(),
-		IsRevoked:            false,
 	})
 	if err != nil {
 		return nil, err

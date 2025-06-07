@@ -13,9 +13,8 @@ type Repository interface {
 
 	// Session
 	CreateSession(ctx context.Context, data *domain.Session) (*domain.Session, error)
-	FindSessionByID(ctx context.Context, id uint64) (*domain.Session, error)
+	FindSessionBySessionID(ctx context.Context, sessionID string) (*domain.Session, error)
 	DeleteSessionByID(ctx context.Context, id uint64) error
-	RevokeSessionByID(ctx context.Context, id uint64) error
 
 	// User
 	FindUserByUsername(ctx context.Context, username string) (*domain.User, error)

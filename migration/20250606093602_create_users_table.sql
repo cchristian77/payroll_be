@@ -29,7 +29,6 @@ CREATE TABLE IF NOT EXISTS sessions
     access_token_created_at TIMESTAMPTZ                   NOT NULL DEFAULT (now()),
     user_agent              VARCHAR(255)                  NOT NULL,
     client_ip               VARCHAR(255)                  NOT NULL,
-    is_revoked              BOOLEAN                       NOT NULL DEFAULT false
 );
 
 -- +goose Down

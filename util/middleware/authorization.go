@@ -29,11 +29,11 @@ func GetAuthorization() *Authorization {
 	return authMiddleware
 }
 
-func (a *Authorization) AuthAdminOnly() echo.MiddlewareFunc {
+func (a *Authorization) AdminOnly() echo.MiddlewareFunc {
 	return a.authenticationWithRoles(enums.AdminRole)
 }
 
-func (a *Authorization) AuthUserOnly() echo.MiddlewareFunc {
+func (a *Authorization) UserOnly() echo.MiddlewareFunc {
 	return a.authenticationWithRoles(enums.UserRole)
 }
 
@@ -73,7 +73,7 @@ func (a *Authorization) authenticationWithRoles(allowedRoles ...string) echo.Mid
 				}
 			}
 
-			return echo.NewHTTPError(http.StatusUnauthorized, "Not allowed")
+			return sharedErrs.ForbiddenErr
 		}
 	}
 }

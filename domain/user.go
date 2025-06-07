@@ -1,6 +1,7 @@
 package domain
 
 import (
+	"github.com/cchristian77/payroll_be/domain/enums"
 	"gorm.io/gorm"
 	"time"
 )
@@ -16,4 +17,15 @@ type User struct {
 	Password   string
 	Role       string
 	BaseSalary uint64
+
+	// Associations
+	Attendances    []Attendance    `gorm:"foreignKey:UserID"`
+	Overtimes      []Overtime      `gorm:"foreignKey:UserID"`
+	Reimbursements []Reimbursement `gorm:"foreignKey:UserID"`
+}
+
+func (u *User) GetHourlyRate() uint64 {
+	totalHours := uint64(enums.UserWorkDays * enums.UserWorkHours)
+
+	return u.BaseSalary / totalHours
 }

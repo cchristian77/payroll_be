@@ -15,13 +15,25 @@ type Error struct {
 	Error   error  `json:"error,omitempty"`
 }
 
+type Meta struct {
+	Page      int   `json:"page,omitempty"`
+	PerPage   int   `json:"per_page,omitempty"`
+	PageCount int   `json:"page_count"`
+	Total     int64 `json:"total"`
+}
+
+type BasePagination[T any] struct {
+	Data T     `json:"data"`
+	Meta *Meta `json:"meta"`
+}
+
 func NewErrorResponse(ec echo.Context, statusCode int, message string, err error) error {
 	ec.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 
 	ec.Response().WriteHeader(statusCode)
 
 	return ec.JSON(statusCode, Error{
-		Message: err.Error(),
+		Message: message,
 		Status:  statusCode,
 		Error:   err,
 	})

@@ -9,4 +9,7 @@ type Attendance struct {
 	Date     time.Time
 	CheckIn  time.Time
 	CheckOut *time.Time
+
+	// Associations
+	Overtime *Overtime `gorm:"foreignKey:AttendanceID"`
 }

@@ -27,6 +27,24 @@ func (r *repo) FindReimbursementByIDAndUserID(ctx context.Context, id, userID ui
 	return data, nil
 }
 
+func (r *repo) FindReimbursementsByUserIDAndStatus(ctx context.Context, userID uint64, status string) ([]*domain.Reimbursement, error) {
+	var data []*domain.Reimbursement
+
+	db, _ := database.ConnFromContext(ctx, r.DB)
+
+	err := db.WithContext(ctx).
+		Where("user_id = ? AND status = ?", userID, status).
+		Find(&data).
+		Error
+	if err != nil {
+		logger.Error(fmt.Sprintf("[REPOSITORY] Failed on find reimbursements by id and status : %v", err))
+
+		return nil, err
+	}
+
+	return data, nil
+}
+
 func (r *repo) UpsertReimbursement(ctx context.Context, data *domain.Reimbursement) (*domain.Reimbursement, error) {
 	db, _ := database.ConnFromContext(ctx, r.DB)
 

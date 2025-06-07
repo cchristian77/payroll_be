@@ -42,3 +42,22 @@ func (r *repo) FindUserByID(ctx context.Context, id uint64) (*domain.User, error
 
 	return result, nil
 }
+
+func (r *repo) FindBatchUsers(ctx context.Context, batchSize int, lastID uint64) ([]*domain.User, error) {
+	var result []*domain.User
+
+	db, _ := database.ConnFromContext(ctx, r.DB)
+
+	err := db.WithContext(ctx).
+		Where("id > ?", lastID).
+		Limit(batchSize).
+		Find(&result).
+		Error
+	if err != nil {
+		logger.Error(fmt.Sprintf("[REPOSITORY] Failed on find batch users : %v", err))
+
+		return nil, err
+	}
+
+	return result, nil
+}

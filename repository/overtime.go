@@ -46,6 +46,24 @@ func (r *repo) FindOvertimeByIDAndUserID(ctx context.Context, id, userID uint64)
 	return data, nil
 }
 
+func (r *repo) FindOvertimesByUserIDAndDateRange(ctx context.Context, userID uint64, startDate, endDate time.Time) ([]*domain.Overtime, error) {
+	var data []*domain.Overtime
+
+	db, _ := database.ConnFromContext(ctx, r.DB)
+
+	err := db.WithContext(ctx).
+		Where("user_id = ? AND (date >= ? AND date <= ?)", userID, startDate.Format(time.DateOnly), endDate.Format(time.DateOnly)).
+		Find(&data).
+		Error
+	if err != nil {
+		logger.Error(fmt.Sprintf("[REPOSITORY] Failed on find overtimes by id and date range: %v", err))
+
+		return nil, err
+	}
+
+	return data, nil
+}
+
 func (r *repo) UpsertOvertime(ctx context.Context, data *domain.Overtime) (*domain.Overtime, error) {
 	db, _ := database.ConnFromContext(ctx, r.DB)
 

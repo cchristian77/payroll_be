@@ -16,6 +16,7 @@ func (r *repo) FindPayslipByUserIDAndPayrollPeriodID(ctx context.Context, userID
 	db, _ := database.ConnFromContext(ctx, r.DB)
 
 	err := db.WithContext(ctx).
+		Preload("User").
 		Where("user_id = ? AND payroll_period_id = ?", userID, payrollPeriodID).
 		First(&data).
 		Error

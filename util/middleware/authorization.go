@@ -11,6 +11,11 @@ import (
 	"strings"
 )
 
+const (
+	authHeaderKey  = "authorization"
+	authTypeBearer = "bearer"
+)
+
 var authMiddleware *Authorization
 
 type Authorization struct {
@@ -44,7 +49,7 @@ func (a *Authorization) Authenticate() echo.MiddlewareFunc {
 func (a *Authorization) authenticationWithRoles(allowedRoles ...string) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(ec echo.Context) error {
-			authHeader := ec.Request().Header.Get(util.AuthHeaderKey)
+			authHeader := ec.Request().Header.Get(authHeaderKey)
 			if authHeader == "" {
 				return sharedErrs.UnauthorizedErr
 			}
@@ -55,7 +60,7 @@ func (a *Authorization) authenticationWithRoles(allowedRoles ...string) echo.Mid
 			}
 
 			authorizationType := strings.ToLower(authFields[0])
-			if authorizationType != util.AuthTypeBearer {
+			if authorizationType != authTypeBearer {
 				return echo.NewHTTPError(http.StatusUnauthorized, fmt.Sprintf("unsupported authorization type %s", authorizationType))
 			}
 

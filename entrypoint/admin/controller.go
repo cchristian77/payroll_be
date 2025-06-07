@@ -102,15 +102,12 @@ func (c *Controller) FindPayslipList(ec echo.Context) error {
 }
 
 func (c *Controller) PayslipSummary(ec echo.Context) error {
-	var input request.RunPayroll
-
 	payrollPeriodID, err := strconv.Atoi(ec.QueryParam("payroll_period_id"))
 	if err != nil || payrollPeriodID <= 0 {
 		return response.NewErrorResponse(ec, http.StatusBadRequest, "Please provide a valid payroll_period_id as integer", err)
 	}
-	input.PayrollPeriodID = uint64(payrollPeriodID)
 
-	result, err := c.payslip.GetSummary(ec, &input)
+	result, err := c.payslip.GetSummary(ec, uint64(payrollPeriodID))
 	if err != nil {
 		return err
 	}

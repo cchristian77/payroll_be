@@ -7,6 +7,7 @@ import (
 	authEntrypoint "github.com/cchristian77/payroll_be/entrypoint/auth"
 	overtimeEntrypoint "github.com/cchristian77/payroll_be/entrypoint/overtime"
 	reimbursementEntrypoint "github.com/cchristian77/payroll_be/entrypoint/reimbursement"
+	"github.com/cchristian77/payroll_be/entrypoint/user"
 	"github.com/cchristian77/payroll_be/repository"
 	"github.com/cchristian77/payroll_be/service/attendance"
 	"github.com/cchristian77/payroll_be/service/auth"
@@ -113,6 +114,7 @@ func registerRoutes(router *echo.Echo) {
 	overtimeController := overtimeEntrypoint.NewController(overtimeService)
 	reimbursementController := reimbursementEntrypoint.NewController(reimbursementService)
 	adminController := admin.NewController(payrollPeriodService, payslipService)
+	userController := user.NewController(payslipService)
 
 	// register all routes
 	authController.RegisterRoutes(router)
@@ -120,4 +122,5 @@ func registerRoutes(router *echo.Echo) {
 	overtimeController.RegisterRoutes(router)
 	reimbursementController.RegisterRoutes(router)
 	adminController.RegisterRoutes(router)
+	userController.RegisterRoutes(router)
 }

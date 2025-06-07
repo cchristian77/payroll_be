@@ -7,24 +7,19 @@ import (
 
 type keys string
 
-const (
-	txKey         keys = "DBTRX"
-	connectionKey keys = "connection"
-)
+const txKey keys = "DBTRX"
 
 func ConnFromContext(ctx context.Context, defaults ...*gorm.DB) (*gorm.DB, bool) {
 	tx, ok := GetTxFromContext(ctx)
 	if ok {
 		return tx, ok
 	}
-	conn, ok := ctx.Value(connectionKey).(*gorm.DB)
-	if !ok {
-		if len(defaults) > 0 {
-			return defaults[0], false
-		}
+
+	if len(defaults) == 0 {
 		return nil, false
 	}
-	return conn, ok
+
+	return defaults[0], true
 }
 
 func InitTx(ctx context.Context, db *gorm.DB) (context.Context, *gorm.DB) {

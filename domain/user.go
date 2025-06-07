@@ -25,7 +25,7 @@ type User struct {
 }
 
 func (u *User) GetHourlyRate() uint64 {
-	totalHours := uint64(enums.UserWorkDays * enums.UserWorkHours)
+	totalHours := enums.UserWorkDays * enums.UserWorkHours
 
 	return u.BaseSalary / totalHours
 }

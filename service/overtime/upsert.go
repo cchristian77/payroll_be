@@ -47,11 +47,5 @@ func (b *base) Upsert(ec echo.Context, input *request.UpsertOvertime) (*response
 		return nil, err
 	}
 
-	return &response.Overtime{
-		AttendanceID: overtime.AttendanceID,
-		CreatedAt:    overtime.CreatedAt,
-		UpdatedAt:    overtime.UpdatedAt,
-		Date:         overtime.Date.Format(time.DateOnly),
-		Duration:     overtime.Duration,
-	}, nil
+	return response.NewOvertimeFromDomain(overtime), nil
 }

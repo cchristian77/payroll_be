@@ -19,6 +19,7 @@ type Repository interface {
 	FindUserByUsername(ctx context.Context, username string) (*domain.User, error)
 	FindUserByID(ctx context.Context, id uint64) (*domain.User, error)
 	FindBatchUsers(ctx context.Context, batchSize int, lastID uint64) ([]*domain.User, error)
+	CreateUser(ctx context.Context, data *domain.User) (*domain.User, error)
 
 	// Attendance
 	FindAttendanceByUserIDAndDate(ctx context.Context, userID uint64, date time.Time) (*domain.Attendance, error)
@@ -36,6 +37,7 @@ type Repository interface {
 	// Reimbursement
 	FindReimbursementByIDAndUserID(ctx context.Context, id, userID uint64) (*domain.Reimbursement, error)
 	FindReimbursementsByUserIDAndStatus(ctx context.Context, userID uint64, status string) ([]*domain.Reimbursement, error)
+	FindReimbursementsByPayslipID(ctx context.Context, payslipID uint64) ([]*domain.Reimbursement, error)
 	UpsertReimbursement(ctx context.Context, data *domain.Reimbursement) (*domain.Reimbursement, error)
 
 	// Payroll Period

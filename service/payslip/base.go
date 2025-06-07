@@ -11,7 +11,8 @@ import (
 type Service interface {
 	RunPayroll(ec echo.Context, input *request.RunPayroll) error
 	FindPayslipList(ec echo.Context, input *request.FindPayslipList) (*response.BasePagination[[]*response.Payslip], error)
-	GetSummary(ec echo.Context, input *request.RunPayroll) (*response.PayslipSummary, error)
+	FindUserPayslip(ec echo.Context, payrollPeriodID uint64) (*response.UserPayslip, error)
+	GetSummary(ec echo.Context, payrollPeriodID uint64) (*response.PayslipSummary, error)
 }
 
 type base struct {

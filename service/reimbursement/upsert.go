@@ -56,18 +56,11 @@ func (b *base) Upsert(ec echo.Context, input *request.UpsertReimbursement) (*res
 		UserID:      authUser.ID,
 		Description: input.Description,
 		Amount:      input.Amount,
-		Status:      enums.PendingReimbursementStatus,
+		Status:      enums.PENDINGReimbursementStatus,
 	})
 	if err != nil {
 		return nil, err
 	}
 
-	return &response.Reimbursement{
-		ID:          reimbursement.ID,
-		CreatedAt:   reimbursement.CreatedAt,
-		UpdatedAt:   reimbursement.UpdatedAt,
-		Description: reimbursement.Description,
-		Amount:      reimbursement.Amount,
-		Status:      reimbursement.Status,
-	}, nil
+	return response.NewReimbursementFromDomain(reimbursement), nil
 }

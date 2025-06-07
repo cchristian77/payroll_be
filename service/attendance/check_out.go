@@ -50,12 +50,5 @@ func (b *base) CheckOut(ec echo.Context) (*response.Attendance, error) {
 		return nil, err
 	}
 
-	return &response.Attendance{
-		AttendanceID: attendance.ID,
-		CreatedAt:    attendance.CreatedAt,
-		UpdatedAt:    attendance.UpdatedAt,
-		Date:         attendance.Date.Format(time.DateOnly),
-		CheckIn:      attendance.CheckIn,
-		CheckOut:     &now,
-	}, nil
+	return response.NewAttendanceFromDomain(attendance), nil
 }

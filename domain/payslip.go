@@ -16,6 +16,7 @@ type Payslip struct {
 	TotalSalary         uint64
 
 	// Associations
-	User          *User          `gorm:"foreignKey:UserID;references:ID"`
-	PayrollPeriod *PayrollPeriod `gorm:"foreignKey:PayrollPeriodID;references:ID"`
+	User           *User            `gorm:"foreignKey:UserID;references:ID"`
+	PayrollPeriod  *PayrollPeriod   `gorm:"foreignKey:PayrollPeriodID;references:ID"`
+	Reimbursements []*Reimbursement `gorm:"foreignKey:PayslipID;references:ID"`
 }

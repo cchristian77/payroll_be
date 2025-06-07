@@ -18,6 +18,9 @@ CREATE TABLE IF NOT EXISTS payslips
     total_overtime_hours  INTEGER   NOT NULL,
     total_reimbursements  BIGINT    NOT NULL,
     base_salary           BIGINT    NOT NULL,
+    attendance_pay        BIGINT    NOT NULL,
+    overtime_pay          BIGINT    NOT NULL,
+    reimbursement_pay     BIGINT    NOT NULL,
     total_salary          BIGINT    NOT NULL,
 
     UNIQUE (user_id, payroll_period_id)

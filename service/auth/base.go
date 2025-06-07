@@ -6,6 +6,7 @@ import (
 	"github.com/cchristian77/payroll_be/request"
 	"github.com/cchristian77/payroll_be/response"
 	"github.com/labstack/echo/v4"
+	"gorm.io/gorm"
 )
 
 type Service interface {
@@ -16,8 +17,12 @@ type Service interface {
 
 type base struct {
 	repository repository.Repository
+	writeDB    *gorm.DB
 }
 
-func NewService(repository repository.Repository) (Service, error) {
-	return &base{repository: repository}, nil
+func NewService(repository repository.Repository, writerDB *gorm.DB) (Service, error) {
+	return &base{
+		repository: repository,
+		writeDB:    writerDB,
+	}, nil
 }

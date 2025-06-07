@@ -18,6 +18,10 @@ func (b *base) CheckIn(ec echo.Context) (*response.Attendance, error) {
 
 	now := time.Now()
 
+	//if util.Contains([]time.Weekday{time.Saturday, time.Sunday}, now.Weekday()) {
+	//	return nil, sharedErrs.NewBusinessValidationErr("You are not able to check on the weekend.")
+	//}
+
 	attendanceExists, err := b.repository.FindAttendanceByUserIDAndDate(ctx, authUser.ID, now)
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, err
@@ -48,7 +52,7 @@ func (b *base) CheckIn(ec echo.Context) (*response.Attendance, error) {
 		AttendanceID: attendance.ID,
 		CreatedAt:    attendance.CreatedAt,
 		UpdatedAt:    attendance.UpdatedAt,
-		Date:         attendance.Date,
+		Date:         attendance.Date.Format(time.DateOnly),
 		CheckIn:      attendance.CheckIn,
 		CheckOut:     attendance.CheckOut,
 	}, nil

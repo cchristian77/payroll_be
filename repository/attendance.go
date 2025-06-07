@@ -46,6 +46,24 @@ func (r *repo) FindAttendanceByIDAndUserID(ctx context.Context, id, userID uint6
 	return data, nil
 }
 
+func (r *repo) FindAttendancesByUserIDAndDateRange(ctx context.Context, userID uint64, startDate, endDate time.Time) ([]*domain.Attendance, error) {
+	var data []*domain.Attendance
+
+	db, _ := database.ConnFromContext(ctx, r.DB)
+
+	err := db.WithContext(ctx).
+		Where("user_id = ? AND (date >= ? AND date <= ?)", userID, startDate.Format(time.DateOnly), endDate.Format(time.DateOnly)).
+		Find(&data).
+		Error
+	if err != nil {
+		logger.Error(fmt.Sprintf("[REPOSITORY] Failed on find attendance by id and date range: %v", err))
+
+		return nil, err
+	}
+
+	return data, nil
+}
+
 func (r *repo) CreateAttendance(ctx context.Context, data *domain.Attendance) (*domain.Attendance, error) {
 	db, _ := database.ConnFromContext(ctx, r.DB)
 

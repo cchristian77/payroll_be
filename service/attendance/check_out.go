@@ -19,12 +19,12 @@ func (b *base) CheckOut(ec echo.Context) (*response.Attendance, error) {
 	now := time.Now()
 
 	attendance, err := b.repository.FindAttendanceByUserIDAndDate(ctx, authUser.ID, now)
-	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, sharedErrs.NotFoundErr
-		}
-
+	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, err
+	}
+
+	if attendance == nil {
+		return nil, sharedErrs.NewBusinessValidationErr(fmt.Sprintf("You haven't checked in yet today."))
 	}
 
 	if attendance.CheckOut != nil {
@@ -54,7 +54,7 @@ func (b *base) CheckOut(ec echo.Context) (*response.Attendance, error) {
 		AttendanceID: attendance.ID,
 		CreatedAt:    attendance.CreatedAt,
 		UpdatedAt:    attendance.UpdatedAt,
-		Date:         attendance.Date,
+		Date:         attendance.Date.Format(time.DateOnly),
 		CheckIn:      attendance.CheckIn,
 		CheckOut:     &now,
 	}, nil

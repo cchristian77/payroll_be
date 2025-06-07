@@ -2,6 +2,7 @@ package api
 
 import (
 	"fmt"
+	"github.com/cchristian77/payroll_be/entrypoint/admin"
 	attendanceEntrypoint "github.com/cchristian77/payroll_be/entrypoint/attendance"
 	authEntrypoint "github.com/cchristian77/payroll_be/entrypoint/auth"
 	overtimeEntrypoint "github.com/cchristian77/payroll_be/entrypoint/overtime"
@@ -10,6 +11,8 @@ import (
 	"github.com/cchristian77/payroll_be/service/attendance"
 	"github.com/cchristian77/payroll_be/service/auth"
 	"github.com/cchristian77/payroll_be/service/overtime"
+	payrollPeriod "github.com/cchristian77/payroll_be/service/payroll_period"
+	"github.com/cchristian77/payroll_be/service/payslip"
 	"github.com/cchristian77/payroll_be/service/reimbursement"
 	"github.com/cchristian77/payroll_be/shared/external/database"
 	"github.com/cchristian77/payroll_be/util"
@@ -74,24 +77,32 @@ func registerRoutes(router *echo.Echo) {
 	repository := repository.NewRepository(gormDB)
 
 	// Initialize all service layers
-	authService, err := auth.NewService(repository)
+	authService, err := auth.NewService(repository, gormDB)
 	if err != nil {
 		logger.Fatal(fmt.Sprintf("auth service initialization error: %v", err))
 	}
 
-	attendanceService, err := attendance.NewService(repository)
+	attendanceService, err := attendance.NewService(repository, gormDB)
 	if err != nil {
 		logger.Fatal(fmt.Sprintf("attendance service initialization error: %v", err))
 	}
 
-	overtimeService, err := overtime.NewService(repository)
+	overtimeService, err := overtime.NewService(repository, gormDB)
 	if err != nil {
 		logger.Fatal(fmt.Sprintf("overtime service initialization error: %v", err))
 	}
 
-	reimbursementService, err := reimbursement.NewService(repository)
+	reimbursementService, err := reimbursement.NewService(repository, gormDB)
 	if err != nil {
 		logger.Fatal(fmt.Sprintf("reimbursement service initialization error: %v", err))
+	}
+	payrollPeriodService, err := payrollPeriod.NewService(repository, gormDB)
+	if err != nil {
+		logger.Fatal(fmt.Sprintf("payroll period service initialization error: %v", err))
+	}
+	payslipService, err := payslip.NewService(repository, gormDB)
+	if err != nil {
+		logger.Fatal(fmt.Sprintf("payslip.go service initialization error: %v", err))
 	}
 
 	utilMiddleware.InitAuthorization(authService)
@@ -101,10 +112,12 @@ func registerRoutes(router *echo.Echo) {
 	attendanceController := attendanceEntrypoint.NewController(attendanceService)
 	overtimeController := overtimeEntrypoint.NewController(overtimeService)
 	reimbursementController := reimbursementEntrypoint.NewController(reimbursementService)
+	adminController := admin.NewController(payrollPeriodService, payslipService)
 
 	// register all routes
 	authController.RegisterRoutes(router)
 	attendanceController.RegisterRoutes(router)
 	overtimeController.RegisterRoutes(router)
 	reimbursementController.RegisterRoutes(router)
+	adminController.RegisterRoutes(router)
 }

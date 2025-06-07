@@ -7,7 +7,7 @@ type Attendance struct {
 	CreatedAt    time.Time `json:"created_at"`
 	UpdatedAt    time.Time `json:"updated_at"`
 
-	Date     time.Time  `json:"date"`
+	Date     string     `json:"date"`
 	CheckIn  time.Time  `json:"check_in"`
 	CheckOut *time.Time `json:"check_out"`
 }

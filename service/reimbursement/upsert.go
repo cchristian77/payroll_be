@@ -13,7 +13,7 @@ import (
 	"time"
 )
 
-func (b base) Upsert(ec echo.Context, input *request.UpsertReimbursement) (*response.Reimbursement, error) {
+func (b *base) Upsert(ec echo.Context, input *request.UpsertReimbursement) (*response.Reimbursement, error) {
 	ctx := ec.Request().Context()
 	authUser := util.EchoCntextAuthUser(ec)
 
@@ -31,6 +31,18 @@ func (b base) Upsert(ec echo.Context, input *request.UpsertReimbursement) (*resp
 
 	if todayAttendance.CheckOut == nil {
 		return nil, sharedErrs.NewBusinessValidationErr("You have to finish your attendance first before requesting the overtime.")
+	}
+
+	// Check whether the reimbursement exists on update
+	if input.ID != 0 {
+		reimbursementExists, err := b.repository.FindReimbursementByIDAndUserID(ctx, input.ID, authUser.ID)
+		if err != nil {
+			return nil, err
+		}
+
+		if reimbursementExists == nil {
+			return nil, sharedErrs.NotFoundErr
+		}
 	}
 
 	reimbursement, err := b.repository.UpsertReimbursement(ctx, &domain.Reimbursement{

@@ -3,7 +3,7 @@
 SELECT 'up SQL query';
 -- +goose StatementEnd
 
-CREATE TYPE reimbursement_status AS ENUM ('pending', 'paid');
+CREATE TYPE reimbursement_status AS ENUM ('PENDING', 'PAID');
 
 CREATE TABLE IF NOT EXISTS reimbursements
 (

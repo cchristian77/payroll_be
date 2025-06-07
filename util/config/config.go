@@ -26,8 +26,7 @@ type Config struct {
 	} `env:"context"`
 
 	Auth struct {
-		AccessTokenExpiration  string `env:"access_token_expiration"`
-		RefreshTokenExpiration string `env:"refresh_token_expiration"`
+		AccessTokenExpiration string `env:"access_token_expiration"`
 	} `env:"auth"`
 
 	JWTKey       string `env:"jwt_key"`

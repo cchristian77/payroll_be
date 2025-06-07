@@ -2,7 +2,7 @@
 -- +goose StatementBegin
 SELECT 'up SQL query';
 -- +goose StatementEnd
-CREATE TABLE IF NOT EXISTS attendances
+CREATE TABLE IF NOT EXISTS overtimes
 (
     attendance_id BIGINT PRIMARY KEY REFERENCES attendances (id),
     created_at    TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -20,4 +20,4 @@ CREATE TABLE IF NOT EXISTS attendances
 SELECT 'down SQL query';
 -- +goose StatementEnd
 
-DROP TABLE IF EXISTS attendances;
+DROP TABLE IF EXISTS overtimes;

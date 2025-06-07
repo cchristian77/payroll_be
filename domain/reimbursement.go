@@ -12,4 +12,7 @@ type Reimbursement struct {
 
 	PayslipID    *uint64
 	ReimbursedAt *time.Time
+
+	// Associations
+	Payslip *Payslip `gorm:"foreignKey:PayslipID;references:ID"`
 }

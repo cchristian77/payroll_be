@@ -2,7 +2,7 @@ package domain
 
 import "time"
 
-type PayslipPeriod struct {
+type PayrollPeriod struct {
 	BaseModel
 
 	StartDate    time.Time

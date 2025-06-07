@@ -16,7 +16,7 @@ func (r *repo) FindOverlappingPayrollPeriods(ctx context.Context, startDate, end
 	db, _ := database.ConnFromContext(ctx, r.DB)
 
 	err := db.WithContext(ctx).
-		Where("start_date > ? OR end_date < ?", startDate.Format(time.DateOnly), endDate.Format(time.DateOnly)).
+		Where("start_date <= ? AND end_date >= ?", startDate.Format(time.DateOnly), endDate.Format(time.DateOnly)).
 		Find(&data).
 		Error
 	if err != nil {

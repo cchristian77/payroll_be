@@ -140,7 +140,7 @@ func (b *base) ProcessPayroll(ec echo.Context, user *domain.User, payrollPeriod 
 		return err
 	}
 
-	if err := tx.Commit().Error; err != nil {
+	if err = tx.Commit().Error; err != nil {
 		logger.Error(fmt.Sprintf("[REPOSITORY] Error on RunPayroll func: COMMIT TXN: %v", err))
 		return err
 	}
@@ -193,7 +193,7 @@ func (b *base) calculateReimbursementPay(ec echo.Context, user *domain.User) (ui
 	var reimbursementPay uint64
 
 	reimbursements, err := b.repository.FindReimbursementsByUserIDAndStatus(ec.Request().Context(),
-		user.ID, enums.PendingReimbursementStatus)
+		user.ID, enums.PENDINGReimbursementStatus)
 	if err != nil {
 		return 0, err
 	}
@@ -208,7 +208,7 @@ func (b *base) calculateReimbursementPay(ec echo.Context, user *domain.User) (ui
 func (b *base) payReimbursements(ec echo.Context, userID, payslipID uint64) error {
 	ctx := ec.Request().Context()
 
-	reimbursements, err := b.repository.FindReimbursementsByUserIDAndStatus(ctx, userID, enums.PendingReimbursementStatus)
+	reimbursements, err := b.repository.FindReimbursementsByUserIDAndStatus(ctx, userID, enums.PENDINGReimbursementStatus)
 	if err != nil {
 		return err
 	}
@@ -216,7 +216,7 @@ func (b *base) payReimbursements(ec echo.Context, userID, payslipID uint64) erro
 	now := time.Now()
 	for _, reimbursement := range reimbursements {
 
-		reimbursement.Status = enums.PaidReimbursementStatus
+		reimbursement.Status = enums.PAIDReimbursementStatus
 		reimbursement.ReimbursedAt = &now
 		reimbursement.PayslipID = &payslipID
 		reimbursement.UpdatedAt = now

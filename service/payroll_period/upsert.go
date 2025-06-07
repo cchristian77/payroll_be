@@ -42,7 +42,7 @@ func (b *base) Upsert(ec echo.Context, input *request.UpsertPayrollPeriod) (*res
 		return nil, sharedErrs.NewBusinessValidationErr("Payroll period is overlapping to another periods.")
 	}
 
-	// find whether the payroll period exists on update
+	// validate payroll period on update
 	if input.ID != 0 {
 		payrollPeriodExists, err := b.repository.FindPayrollPeriodByID(ctx, input.ID)
 		if err != nil {
@@ -51,6 +51,12 @@ func (b *base) Upsert(ec echo.Context, input *request.UpsertPayrollPeriod) (*res
 
 		if payrollPeriodExists == nil {
 			return nil, sharedErrs.NotFoundErr
+		}
+
+		if payrollPeriodExists.PayrollRunAt != nil {
+			return nil, sharedErrs.NewBusinessValidationErr(
+				fmt.Sprintf("Payroll period can not be updated since the payroll is already run at %s",
+					payrollPeriodExists.PayrollRunAt.Format(time.DateTime)))
 		}
 	}
 
@@ -70,13 +76,5 @@ func (b *base) Upsert(ec echo.Context, input *request.UpsertPayrollPeriod) (*res
 		return nil, err
 	}
 
-	return &response.PayrollPeriod{
-		ID:           payrollPeriod.ID,
-		CreatedAt:    payrollPeriod.CreatedAt,
-		UpdatedAt:    payrollPeriod.UpdatedAt,
-		StartDate:    payrollPeriod.StartDate.Format(time.DateOnly),
-		EndDate:      payrollPeriod.EndDate.Format(time.DateOnly),
-		PayrollRunAt: payrollPeriod.PayrollRunAt,
-	}, nil
-
+	return response.NewPayrollPeriodFromDomain(payrollPeriod), nil
 }

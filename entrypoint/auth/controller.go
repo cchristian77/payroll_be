@@ -21,6 +21,7 @@ func NewController(auth auth.Service) *Controller {
 func (c *Controller) RegisterRoutes(router *echo.Echo) {
 	groupV1 := router.Group("/auth/v1")
 	groupV1.POST("/login", c.Login)
+	groupV1.POST("/register", c.Register)
 	groupV1.GET("/current_user", c.CurrentUser, middleware.GetAuthorization().Authenticate())
 }
 
@@ -52,4 +53,13 @@ func (c *Controller) CurrentUser(ec echo.Context) error {
 		FullName: authUser.FullName,
 		Role:     authUser.Role,
 	})
+}
+
+func (c *Controller) Register(ec echo.Context) error {
+	if err := c.auth.Register(ec); err != nil {
+		return err
+	}
+
+	return response.NewSuccessResponse(ec, http.StatusOK, nil)
+
 }

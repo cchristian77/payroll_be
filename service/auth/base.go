@@ -10,9 +10,10 @@ import (
 )
 
 type Service interface {
-	Authenticate(ctx echo.Context, token string) (*domain.User, error)
-	Login(ctx echo.Context, input *request.Login) (*response.Auth, error)
-	Logout(ctx echo.Context, sessionID uint64) error
+	Authenticate(ec echo.Context, token string) (*domain.User, error)
+	Login(ec echo.Context, input *request.Login) (*response.Auth, error)
+	Logout(ec echo.Context, sessionID uint64) error
+	Register(ec echo.Context) error
 }
 
 type base struct {

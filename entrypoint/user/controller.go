@@ -1,0 +1,41 @@
+package user
+
+import (
+	"github.com/cchristian77/payroll_be/response"
+	"github.com/cchristian77/payroll_be/service/payslip"
+	"github.com/cchristian77/payroll_be/util/middleware"
+	"github.com/labstack/echo/v4"
+	"net/http"
+	"strconv"
+)
+
+type Controller struct {
+	payslip payslip.Service
+}
+
+func NewController(payslip payslip.Service) *Controller {
+	return &Controller{
+		payslip: payslip,
+	}
+}
+
+func (c *Controller) RegisterRoutes(router *echo.Echo) {
+	groupV1 := router.Group("/user/v1", middleware.GetAuthorization().Authenticate())
+
+	payrollGroup := groupV1.Group("/payslips")
+	payrollGroup.GET("", c.MyPayslip)
+}
+
+func (c *Controller) MyPayslip(ec echo.Context) error {
+	payrollPeriodID, err := strconv.Atoi(ec.QueryParam("payroll_period_id"))
+	if err != nil || payrollPeriodID <= 0 {
+		return response.NewErrorResponse(ec, http.StatusBadRequest, "Please provide a valid payroll_period_id as integer", err)
+	}
+
+	result, err := c.payslip.FindUserPayslip(ec, uint64(payrollPeriodID))
+	if err != nil {
+		return err
+	}
+
+	return response.NewSuccessResponse(ec, http.StatusOK, result)
+}

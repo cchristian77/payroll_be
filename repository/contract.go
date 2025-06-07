@@ -7,6 +7,8 @@ import (
 	"time"
 )
 
+//go:generate mockgen -package repository -source=contract.go -destination=mock_repository.go *
+
 type Repository interface {
 
 	// Session

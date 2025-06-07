@@ -35,15 +35,15 @@ func GetAuthorization() *Authorization {
 }
 
 func (a *Authorization) AdminOnly() echo.MiddlewareFunc {
-	return a.authenticationWithRoles(enums.AdminRole)
+	return a.authenticationWithRoles(enums.ADMINRole)
 }
 
 func (a *Authorization) UserOnly() echo.MiddlewareFunc {
-	return a.authenticationWithRoles(enums.UserRole)
+	return a.authenticationWithRoles(enums.USERRole)
 }
 
 func (a *Authorization) Authenticate() echo.MiddlewareFunc {
-	return a.authenticationWithRoles(enums.AdminRole, enums.UserRole)
+	return a.authenticationWithRoles(enums.ADMINRole, enums.USERRole)
 }
 
 func (a *Authorization) authenticationWithRoles(allowedRoles ...string) echo.MiddlewareFunc {

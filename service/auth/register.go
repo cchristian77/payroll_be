@@ -26,7 +26,7 @@ func (b *base) Register(ec echo.Context) error {
 			Username:   fmt.Sprintf("user%d", i),
 			FullName:   fmt.Sprintf("User %d", i),
 			Password:   string(password),
-			Role:       enums.UserRole,
+			Role:       enums.USERRole,
 			BaseSalary: 5000000,
 		})
 		if err != nil {
@@ -45,7 +45,7 @@ func (b *base) Register(ec echo.Context) error {
 		Username:   "admin",
 		FullName:   "Administrator",
 		Password:   string(password),
-		Role:       enums.AdminRole,
+		Role:       enums.ADMINRole,
 		BaseSalary: 7500000,
 	})
 	if err != nil {

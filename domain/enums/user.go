@@ -2,8 +2,8 @@ package enums
 
 // USER ROLE
 const (
-	UserRole  = "USER"
-	AdminRole = "ADMIN"
+	USERRole  = "USER"
+	ADMINRole = "ADMIN"
 )
 
 const (

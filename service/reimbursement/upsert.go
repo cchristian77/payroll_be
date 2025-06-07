@@ -1,7 +1,6 @@
 package reimbursement
 
 import (
-	"errors"
 	"github.com/cchristian77/payroll_be/domain"
 	"github.com/cchristian77/payroll_be/domain/enums"
 	"github.com/cchristian77/payroll_be/request"
@@ -9,7 +8,6 @@ import (
 	"github.com/cchristian77/payroll_be/util"
 	sharedErrs "github.com/cchristian77/payroll_be/util/errors"
 	"github.com/labstack/echo/v4"
-	"gorm.io/gorm"
 	"time"
 )
 
@@ -18,20 +16,6 @@ func (b *base) Upsert(ec echo.Context, input *request.UpsertReimbursement) (*res
 	authUser := util.EchoCntextAuthUser(ec)
 
 	now := time.Now()
-
-	// check attendance exists to create overtime
-	todayAttendance, err := b.repository.FindAttendanceByUserIDAndDate(ctx, authUser.ID, now)
-	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
-		return nil, err
-	}
-
-	if todayAttendance == nil {
-		return nil, sharedErrs.NewBusinessValidationErr("You must have attendance today to request the overtime.")
-	}
-
-	if todayAttendance.CheckOut == nil {
-		return nil, sharedErrs.NewBusinessValidationErr("You have to finish your attendance first before requesting the overtime.")
-	}
 
 	// Check whether the reimbursement exists on update
 	if input.ID != 0 {
@@ -42,6 +26,10 @@ func (b *base) Upsert(ec echo.Context, input *request.UpsertReimbursement) (*res
 
 		if reimbursementExists == nil {
 			return nil, sharedErrs.NotFoundErr
+		}
+
+		if reimbursementExists.Status == enums.PAIDReimbursementStatus {
+			return nil, sharedErrs.NewBusinessValidationErr("Reimbursement has already been paid.")
 		}
 	}
 

@@ -1,11 +1,11 @@
 package reimbursement
 
 import (
+	"context"
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/cchristian77/payroll_be/domain/enums"
 	"github.com/cchristian77/payroll_be/repository"
 	"github.com/cchristian77/payroll_be/util/mock"
-	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 	"go.uber.org/mock/gomock"
@@ -34,10 +34,10 @@ func TestNewService_Success(t *testing.T) {
 
 type ReimbursementServiceTestSuite struct {
 	suite.Suite
-	ec      echo.Context
 	repo    *repository.MockRepository
 	writeDB *gorm.DB
 	sqlMock sqlmock.Sqlmock
+	ctx     context.Context
 
 	reimbursementService Service
 }
@@ -48,8 +48,8 @@ func (suite *ReimbursementServiceTestSuite) Before(t *testing.T) {
 
 	var err error
 
-	suite.ec = mock.NewEchoContext()
-	suite.ec.Set(enums.AuthUserCtxKey, mock.InitUserDomain())
+	suite.ctx = context.Background()
+	suite.ctx = context.WithValue(suite.ctx, enums.AuthUserCtxKey, mock.InitUserDomain())
 	suite.repo = repository.NewMockRepository(ctrl)
 	suite.writeDB, suite.sqlMock, err = mock.NewMockDB()
 	if err != nil {

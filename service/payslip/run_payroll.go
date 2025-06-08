@@ -12,15 +12,12 @@ import (
 	"github.com/cchristian77/payroll_be/util"
 	sharedErrs "github.com/cchristian77/payroll_be/util/errors"
 	"github.com/cchristian77/payroll_be/util/logger"
-	"github.com/labstack/echo/v4"
 	"gorm.io/gorm"
 	"time"
 )
 
 // RunPayroll executes payroll for a specified payroll period by calculating salaries for employees.
-func (b *base) RunPayroll(ec echo.Context, input *request.RunPayroll) error {
-	ctx := ec.Request().Context()
-
+func (b *base) RunPayroll(ctx context.Context, input *request.RunPayroll) error {
 	payrollPeriod, err := b.repository.FindPayrollPeriodByID(ctx, input.PayrollPeriodID)
 	if err != nil {
 		return err
@@ -55,7 +52,7 @@ func (b *base) RunPayroll(ec echo.Context, input *request.RunPayroll) error {
 		lastID = users[len(users)-1].ID
 
 		for _, user := range users {
-			if err = b.ProcessPayroll(ec, user, payrollPeriod); err != nil {
+			if err = b.ProcessPayroll(ctx, user, payrollPeriod); err != nil {
 				return err
 			}
 		}
@@ -74,9 +71,8 @@ func (b *base) RunPayroll(ec echo.Context, input *request.RunPayroll) error {
 
 // ProcessPayroll processes payroll for a user for a given payroll period, including calculations and payslip creation.
 // Calculations include attendances, overtimes, and reimbursements pay.
-func (b *base) ProcessPayroll(ec echo.Context, user *domain.User, payrollPeriod *domain.PayrollPeriod) error {
-	ctx := ec.Request().Context()
-	authUser := util.EchoCntextAuthUser(ec)
+func (b *base) ProcessPayroll(ctx context.Context, user *domain.User, payrollPeriod *domain.PayrollPeriod) error {
+	authUser := util.AuthUserFromCtx(ctx)
 
 	payslipExists, err := b.repository.FindPayslipByUserIDAndPayrollPeriodID(ctx, user.ID, payrollPeriod.ID)
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
@@ -89,17 +85,17 @@ func (b *base) ProcessPayroll(ec echo.Context, user *domain.User, payrollPeriod 
 		return nil
 	}
 
-	attendancePay, totalAttendanceDays, err := b.calculateAttendancePay(ec, user, payrollPeriod)
+	attendancePay, totalAttendanceDays, err := b.calculateAttendancePay(ctx, user, payrollPeriod)
 	if err != nil {
 		return err
 	}
 
-	overtimePay, totalOvertimeHours, totalOvertimeDays, err := b.calculateOvertimePay(ec, user, payrollPeriod)
+	overtimePay, totalOvertimeHours, totalOvertimeDays, err := b.calculateOvertimePay(ctx, user, payrollPeriod)
 	if err != nil {
 		return err
 	}
 
-	reimbursementPay, err := b.calculateReimbursementPay(ec, user)
+	reimbursementPay, err := b.calculateReimbursementPay(ctx, user)
 	if err != nil {
 		return err
 	}
@@ -153,10 +149,10 @@ func (b *base) ProcessPayroll(ec echo.Context, user *domain.User, payrollPeriod 
 // calculateAttendancePay computes the attendance pay for a user during a specified payroll period.
 // It multiplies total attendance days by standard work hours and the user's hourly rate.
 // Returns the calculated pay, total attendance days, and any encountered error.
-func (b *base) calculateAttendancePay(ec echo.Context, user *domain.User, payrollPeriod *domain.PayrollPeriod) (uint64, uint, error) {
+func (b *base) calculateAttendancePay(ctx context.Context, user *domain.User, payrollPeriod *domain.PayrollPeriod) (uint64, uint, error) {
 	var attendancePay uint64
 
-	attendances, err := b.repository.FindAttendancesByUserIDAndDateRange(ec.Request().Context(),
+	attendances, err := b.repository.FindAttendancesByUserIDAndDateRange(ctx,
 		user.ID,
 		payrollPeriod.StartDate,
 		payrollPeriod.EndDate)
@@ -172,10 +168,10 @@ func (b *base) calculateAttendancePay(ec echo.Context, user *domain.User, payrol
 }
 
 // calculateOvertimePay calculates the total overtime pay, hours, and days for a user within a specific payroll period.
-func (b *base) calculateOvertimePay(ec echo.Context, user *domain.User, payrollPeriod *domain.PayrollPeriod) (uint64, uint, uint, error) {
+func (b *base) calculateOvertimePay(ctx context.Context, user *domain.User, payrollPeriod *domain.PayrollPeriod) (uint64, uint, uint, error) {
 	var overtimePay uint64
 
-	overtimes, err := b.repository.FindOvertimesByUserIDAndDateRange(ec.Request().Context(),
+	overtimes, err := b.repository.FindOvertimesByUserIDAndDateRange(ctx,
 		user.ID,
 		payrollPeriod.StartDate,
 		payrollPeriod.EndDate)
@@ -196,10 +192,10 @@ func (b *base) calculateOvertimePay(ec echo.Context, user *domain.User, payrollP
 }
 
 // calculateReimbursementPay calculates the total reimbursement pay for a user with a PENDING reimbursement status.
-func (b *base) calculateReimbursementPay(ec echo.Context, user *domain.User) (uint64, error) {
+func (b *base) calculateReimbursementPay(ctx context.Context, user *domain.User) (uint64, error) {
 	var reimbursementPay uint64
 
-	reimbursements, err := b.repository.FindReimbursementsByUserIDAndStatus(ec.Request().Context(),
+	reimbursements, err := b.repository.FindReimbursementsByUserIDAndStatus(ctx,
 		user.ID, enums.PENDINGReimbursementStatus)
 	if err != nil {
 		return 0, err

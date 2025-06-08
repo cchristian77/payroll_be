@@ -1,7 +1,7 @@
 package logger
 
 import (
-	"github.com/cchristian77/payroll_be/domain/enums"
+	"context"
 	"github.com/labstack/echo/v4"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
@@ -11,36 +11,41 @@ import (
 
 var logger *zap.Logger
 
-func Init() *zap.Logger {
+func Get() *zap.Logger {
 	if logger == nil {
-		fileLoggerConfig := zap.NewProductionEncoderConfig()
-		fileLoggerConfig.MessageKey = "message"
-		fileLoggerConfig.LevelKey = "level"
-		fileLoggerConfig.EncodeLevel = zapcore.CapitalLevelEncoder
-		fileLoggerConfig.TimeKey = "timestamp"
-		fileLoggerConfig.EncodeTime = zapcore.ISO8601TimeEncoder
-		fileLoggerConfig.CallerKey = "caller"
-		fileLoggerConfig.EncodeCaller = zapcore.ShortCallerEncoder
-		fileLoggerConfig.FunctionKey = "func"
-		logFile, _ := os.OpenFile("logs/errors.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
-
-		core := zapcore.NewTee(
-			// logger to record in warn level (including errors) to errors.log
-			zapcore.NewCore(
-				zapcore.NewJSONEncoder(fileLoggerConfig),
-				zapcore.AddSync(logFile),
-				zapcore.WarnLevel,
-			),
-			// logger to record in debug level in terminal
-			zapcore.NewCore(
-				zapcore.NewConsoleEncoder(zap.NewDevelopmentEncoderConfig()),
-				zapcore.AddSync(os.Stdout),
-				zapcore.DebugLevel,
-			),
-		)
-
-		logger = zap.New(core, zap.AddCaller(), zap.AddStacktrace(zapcore.ErrorLevel))
+		initLogger()
 	}
+	return logger
+}
+
+func initLogger() *zap.Logger {
+	fileLoggerConfig := zap.NewProductionEncoderConfig()
+	fileLoggerConfig.MessageKey = "message"
+	fileLoggerConfig.LevelKey = "level"
+	fileLoggerConfig.EncodeLevel = zapcore.CapitalLevelEncoder
+	fileLoggerConfig.TimeKey = "timestamp"
+	fileLoggerConfig.EncodeTime = zapcore.ISO8601TimeEncoder
+	fileLoggerConfig.CallerKey = "caller"
+	fileLoggerConfig.EncodeCaller = zapcore.ShortCallerEncoder
+	fileLoggerConfig.FunctionKey = "func"
+	logFile, _ := os.OpenFile("logs/errors.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+
+	core := zapcore.NewTee(
+		// logger to record in warn level (including errors) to errors.log
+		zapcore.NewCore(
+			zapcore.NewJSONEncoder(fileLoggerConfig),
+			zapcore.AddSync(logFile),
+			zapcore.WarnLevel,
+		),
+		// logger to record in debug level in terminal
+		zapcore.NewCore(
+			zapcore.NewConsoleEncoder(zap.NewDevelopmentEncoderConfig()),
+			zapcore.AddSync(os.Stdout),
+			zapcore.DebugLevel,
+		),
+	)
+
+	logger = zap.New(core, zap.AddCaller(), zap.AddStacktrace(zapcore.ErrorLevel))
 
 	return logger
 }
@@ -56,7 +61,6 @@ func RequestLog(next echo.HandlerFunc) echo.HandlerFunc {
 		response := ec.Response()
 
 		fields := []zapcore.Field{
-			zap.String("request_id", ec.Get(enums.RequestIDCtxKey).(string)),
 			zap.Int("status", response.Status),
 			zap.String("latency", time.Since(time.Now()).String()),
 			zap.String("method", request.Method),
@@ -96,6 +100,32 @@ func Info(message string) {
 	logger.Info(message)
 }
 
+func InfoWithCtx(ctx context.Context, message string) {
+	logger.Info(message, getZapFieldsFromCtx(ctx)...)
+}
+
 func Debug(message string) {
 	logger.Debug(message)
+}
+
+func getZapFieldsFromCtx(ctx context.Context) []zapcore.Field {
+	requestID := requestIDFromContext(ctx)
+	authUser := authUserFromContext(ctx)
+
+	var userID uint64
+	if authUser != nil {
+		userID = authUser.ID
+	}
+
+	var fields []zapcore.Field
+
+	if requestID != "" {
+		fields = append(fields, zap.String("request_id", requestID))
+	}
+
+	if userID != 0 {
+		fields = append(fields, zap.Uint64("user_id", userID))
+	}
+
+	return fields
 }

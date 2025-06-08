@@ -1,15 +1,15 @@
 package overtime
 
 import (
+	"context"
 	"github.com/cchristian77/payroll_be/repository"
 	"github.com/cchristian77/payroll_be/request"
 	"github.com/cchristian77/payroll_be/response"
-	"github.com/labstack/echo/v4"
 	"gorm.io/gorm"
 )
 
 type Service interface {
-	Upsert(ec echo.Context, input *request.UpsertOvertime) (*response.Overtime, error)
+	Upsert(ctx context.Context, input *request.UpsertOvertime) (*response.Overtime, error)
 }
 
 type base struct {

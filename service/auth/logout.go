@@ -1,17 +1,15 @@
 package auth
 
 import (
+	"context"
 	"errors"
 	"github.com/cchristian77/payroll_be/domain/enums"
 	sharedErrs "github.com/cchristian77/payroll_be/util/errors"
-	"github.com/labstack/echo/v4"
 	"gorm.io/gorm"
 )
 
-func (b *base) Logout(ec echo.Context) error {
-	ctx := ec.Request().Context()
-
-	sessionID, ok := ec.Get(enums.SessionIDCtxKey).(string)
+func (b *base) Logout(ctx context.Context) error {
+	sessionID, ok := ctx.Value(enums.SessionIDCtxKey).(string)
 	if !ok {
 		return sharedErrs.InvalidTokenErr
 	}

@@ -1,17 +1,15 @@
 package auth
 
 import (
+	"context"
 	"fmt"
 	"github.com/cchristian77/payroll_be/domain"
 	"github.com/cchristian77/payroll_be/domain/enums"
-	"github.com/labstack/echo/v4"
 	"golang.org/x/crypto/bcrypt"
 	"time"
 )
 
-func (b *base) Register(ec echo.Context) error {
-	ctx := ec.Request().Context()
-
+func (b *base) Register(ctx context.Context) error {
 	now := time.Now()
 
 	for i := 0; i <= 100; i++ {

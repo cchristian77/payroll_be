@@ -26,7 +26,9 @@ func (c *Controller) RegisterRoutes(router *echo.Echo) {
 }
 
 func (c *Controller) CheckIn(ec echo.Context) error {
-	data, err := c.attendance.CheckIn(ec)
+	ctx := ec.Request().Context()
+
+	data, err := c.attendance.CheckIn(ctx)
 	if err != nil {
 		return err
 	}
@@ -35,7 +37,9 @@ func (c *Controller) CheckIn(ec echo.Context) error {
 }
 
 func (c *Controller) CheckOut(ec echo.Context) error {
-	data, err := c.attendance.CheckOut(ec)
+	ctx := ec.Request().Context()
+
+	data, err := c.attendance.CheckOut(ctx)
 	if err != nil {
 		return err
 	}

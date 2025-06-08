@@ -1,21 +1,20 @@
 package payslip
 
 import (
+	"context"
 	"github.com/cchristian77/payroll_be/request"
 	"github.com/cchristian77/payroll_be/response"
 	"github.com/cchristian77/payroll_be/util"
-	"github.com/labstack/echo/v4"
 )
 
 // FindPayslipList retrieves the paginated list of payslip for each employee.
-func (b *base) FindPayslipList(ec echo.Context, input *request.FindPayslipList) (*response.BasePagination[[]*response.Payslip], error) {
-	ctx := ec.Request().Context()
+func (b *base) FindPayslipList(ctx context.Context, input *request.FindPayslipList) (*response.BasePagination[[]*response.Payslip], error) {
 
 	var p util.Pagination
 	p.SetPage(input.Page)
 	p.SetLimit(input.PerPage)
 
-	payrollPeriod, err := b.EnsurePayrollExecuted(ec, input.PayrollPeriodID)
+	payrollPeriod, err := b.EnsurePayrollExecuted(ctx, input.PayrollPeriodID)
 	if err != nil {
 		return nil, err
 	}

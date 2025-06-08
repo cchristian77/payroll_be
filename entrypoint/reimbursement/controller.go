@@ -26,6 +26,8 @@ func (c *Controller) RegisterRoutes(router *echo.Echo) {
 }
 
 func (c *Controller) Upsert(ec echo.Context) error {
+	ctx := ec.Request().Context()
+
 	var input request.UpsertReimbursement
 
 	if err := ec.Bind(&input); err != nil {
@@ -36,7 +38,7 @@ func (c *Controller) Upsert(ec echo.Context) error {
 		return err
 	}
 
-	data, err := c.reimbursement.Upsert(ec, &input)
+	data, err := c.reimbursement.Upsert(ctx, &input)
 	if err != nil {
 		return err
 	}

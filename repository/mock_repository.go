@@ -342,19 +342,19 @@ func (mr *MockRepositoryMockRecorder) FindReimbursementsByUserIDAndStatus(ctx, u
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindReimbursementsByUserIDAndStatus", reflect.TypeOf((*MockRepository)(nil).FindReimbursementsByUserIDAndStatus), ctx, userID, status)
 }
 
-// FindSessionByID mocks base method.
-func (m *MockRepository) FindSessionByID(ctx context.Context, id uint64) (*domain.Session, error) {
+// FindSessionBySessionID mocks base method.
+func (m *MockRepository) FindSessionBySessionID(ctx context.Context, sessionID string) (*domain.Session, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "FindSessionByID", ctx, id)
+	ret := m.ctrl.Call(m, "FindSessionBySessionID", ctx, sessionID)
 	ret0, _ := ret[0].(*domain.Session)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// FindSessionByID indicates an expected call of FindSessionByID.
-func (mr *MockRepositoryMockRecorder) FindSessionByID(ctx, id any) *gomock.Call {
+// FindSessionBySessionID indicates an expected call of FindSessionBySessionID.
+func (mr *MockRepositoryMockRecorder) FindSessionBySessionID(ctx, sessionID any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindSessionByID", reflect.TypeOf((*MockRepository)(nil).FindSessionByID), ctx, id)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindSessionBySessionID", reflect.TypeOf((*MockRepository)(nil).FindSessionBySessionID), ctx, sessionID)
 }
 
 // FindUserByID mocks base method.
@@ -385,20 +385,6 @@ func (m *MockRepository) FindUserByUsername(ctx context.Context, username string
 func (mr *MockRepositoryMockRecorder) FindUserByUsername(ctx, username any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindUserByUsername", reflect.TypeOf((*MockRepository)(nil).FindUserByUsername), ctx, username)
-}
-
-// RevokeSessionByID mocks base method.
-func (m *MockRepository) RevokeSessionByID(ctx context.Context, id uint64) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "RevokeSessionByID", ctx, id)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// RevokeSessionByID indicates an expected call of RevokeSessionByID.
-func (mr *MockRepositoryMockRecorder) RevokeSessionByID(ctx, id any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RevokeSessionByID", reflect.TypeOf((*MockRepository)(nil).RevokeSessionByID), ctx, id)
 }
 
 // UpdateAttendance mocks base method.

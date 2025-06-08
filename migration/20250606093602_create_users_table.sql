@@ -22,13 +22,13 @@ CREATE TABLE IF NOT EXISTS users
 CREATE TABLE IF NOT EXISTS sessions
 (
     id                      SERIAL PRIMARY KEY,
-    session_id              UUID                                   DEFAULT gen_random_uuid() UNIQUE,
-    user_id                 INTEGER REFERENCES users (id) NOT NULL,
-    access_token            TEXT                          NOT NULL,
-    access_token_expires_at TIMESTAMPTZ                   NOT NULL,
-    access_token_created_at TIMESTAMPTZ                   NOT NULL DEFAULT (now()),
-    user_agent              VARCHAR(255)                  NOT NULL,
-    client_ip               VARCHAR(255)                  NOT NULL,
+    session_id              UUID                                  DEFAULT gen_random_uuid() UNIQUE,
+    user_id                 BIGINT REFERENCES users (id) NOT NULL,
+    access_token            TEXT                         NOT NULL,
+    access_token_expires_at TIMESTAMPTZ                  NOT NULL,
+    access_token_created_at TIMESTAMPTZ                  NOT NULL DEFAULT (now()),
+    user_agent              VARCHAR(255)                 NOT NULL,
+    client_ip               VARCHAR(255)                 NOT NULL
 );
 
 -- +goose Down

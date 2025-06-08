@@ -5,7 +5,6 @@ import (
 	"github.com/cchristian77/payroll_be/domain/enums"
 	"github.com/cchristian77/payroll_be/service/auth"
 	sharedErrs "github.com/cchristian77/payroll_be/util/errors"
-	"github.com/cchristian77/payroll_be/util/logger"
 	"github.com/labstack/echo/v4"
 	"net/http"
 	"strings"
@@ -73,7 +72,6 @@ func (a *Authorization) authenticationWithRoles(allowedRoles ...string) echo.Mid
 
 			for _, allowedRole := range allowedRoles {
 				if authUser.Role == allowedRole {
-					logger.Info(fmt.Sprintf("payload ID %s", payload.ID))
 					ec.Set(enums.AuthUserCtxKey, authUser)
 					ec.Set(enums.SessionIDCtxKey, payload.ID.String())
 

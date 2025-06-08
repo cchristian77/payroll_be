@@ -5,7 +5,7 @@ SELECT 'up SQL query';
 
 CREATE TABLE IF NOT EXISTS payslips
 (
-    id                    BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+    id                    SERIAL PRIMARY KEY,
     created_at            TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at            TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     created_by            BIGINT    NOT NULL REFERENCES users (id),

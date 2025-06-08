@@ -42,7 +42,7 @@ func InitRouter() *echo.Echo {
 	router.Use(middleware.RateLimiter(middleware.NewRateLimiterMemoryStore(500)))
 
 	// Config Validator to Router
-	router.Validator = util.RegisterValidator()
+	router.Validator = util.InitValidator()
 
 	// Register RequestLog to Router Middleware
 	router.Use(logger.RequestLog)

@@ -28,6 +28,7 @@ func (b *base) CheckIn(ec echo.Context) (*response.Attendance, error) {
 		return nil, err
 	}
 
+	// if attendance exists for today, it implies that user's already checked in today.
 	if attendanceExists != nil {
 		return nil, sharedErrs.NewBusinessValidationErr(
 			fmt.Sprintf("You have already checked in %s", attendanceExists.CheckIn.Format(time.DateTime)),

@@ -2,6 +2,7 @@ package domain
 
 import "time"
 
+// RequestLog represents a log entry for tracking user or system activities performed in the application.
 type RequestLog struct {
 	ID        uint64
 	CreatedAt time.Time

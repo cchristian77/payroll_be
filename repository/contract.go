@@ -9,6 +9,7 @@ import (
 
 //go:generate mockgen -package repository -source=contract.go -destination=mock_repository.go *
 
+// Repository is an interface defining methods for data access and manipulation across various domain models.
 type Repository interface {
 
 	// Session

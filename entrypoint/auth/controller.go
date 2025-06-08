@@ -10,10 +10,12 @@ import (
 	"net/http"
 )
 
+// Controller manages the authentication operations, such as login, logout, etc.
 type Controller struct {
 	auth auth.Service
 }
 
+// NewController initializes a new Controller instance.
 func NewController(auth auth.Service) *Controller {
 	return &Controller{auth: auth}
 }

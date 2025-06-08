@@ -11,11 +11,13 @@ import (
 	"strconv"
 )
 
+// Controller manages payroll periods and payslip-related operations.
 type Controller struct {
 	payrollPeriod payrollPeriod.Service
 	payslip       payslip.Service
 }
 
+// NewController initializes a new Controller instance.
 func NewController(payrollPeriod payrollPeriod.Service, payslip payslip.Service) *Controller {
 	return &Controller{
 		payrollPeriod: payrollPeriod,
@@ -23,6 +25,7 @@ func NewController(payrollPeriod payrollPeriod.Service, payslip payslip.Service)
 	}
 }
 
+// RegisterRoutes configures the routes for the Controller.
 func (c *Controller) RegisterRoutes(router *echo.Echo) {
 	groupV1 := router.Group("/admin/v1", middleware.GetAuthorization().AdminOnly())
 
@@ -35,6 +38,7 @@ func (c *Controller) RegisterRoutes(router *echo.Echo) {
 	payslipGroup.GET("/summary", c.PayslipSummary)
 }
 
+// UpsertPayrollPeriod creates or updates a payroll period.
 func (c *Controller) UpsertPayrollPeriod(ec echo.Context) error {
 	var input request.UpsertPayrollPeriod
 
@@ -54,6 +58,7 @@ func (c *Controller) UpsertPayrollPeriod(ec echo.Context) error {
 	return response.NewSuccessResponse(ec, http.StatusOK, data)
 }
 
+// RunPayroll handles the execution of the payroll process for a specific payroll period.
 func (c *Controller) RunPayroll(ec echo.Context) error {
 	var input request.RunPayroll
 
@@ -72,6 +77,7 @@ func (c *Controller) RunPayroll(ec echo.Context) error {
 	return response.NewSuccessMessageResponse(ec, http.StatusOK, "payroll run successfully")
 }
 
+// FindPayslipList retrieves a paginated list of payslips.
 func (c *Controller) FindPayslipList(ec echo.Context) error {
 	var input request.FindPayslipList
 	var err error
@@ -101,6 +107,7 @@ func (c *Controller) FindPayslipList(ec echo.Context) error {
 	return response.NewSuccessResponse(ec, http.StatusOK, result)
 }
 
+// PayslipSummary fetches a summary of payslips for a specified payroll period ID.
 func (c *Controller) PayslipSummary(ec echo.Context) error {
 	payrollPeriodID, err := strconv.Atoi(ec.QueryParam("payroll_period_id"))
 	if err != nil || payrollPeriodID <= 0 {

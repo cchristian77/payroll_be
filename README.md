@@ -14,6 +14,8 @@ utilizing Go and PostgreSQL for reliable data storage. The purpose of this appli
 
 - `domain/`: This directory holds struct object representation for each table in the database.
 
+- `domain/enums`: This directory holds enums constants for each domain. 
+
 - `entrypoint/`: This directory is the controller layer for API endpoints. The controller layer's function is to accept and validate incoming requests before they are processed by the service layer.
 
 - `migration/`: This directory holds SQL migrations files to create and modify tables in the database.

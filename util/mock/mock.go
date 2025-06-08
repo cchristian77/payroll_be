@@ -116,3 +116,43 @@ func InitReimbursementDomain() *domain.Reimbursement {
 		Status:      enums.PENDINGReimbursementStatus,
 	}
 }
+
+func InitPayrollPeriodDomain() *domain.PayrollPeriod {
+	now := time.Now()
+
+	return &domain.PayrollPeriod{
+		BaseModel: domain.BaseModel{
+			ID:        1,
+			CreatedAt: now,
+			UpdatedAt: now,
+			CreatedBy: 1,
+		},
+		StartDate:    now,
+		EndDate:      now,
+		PayrollRunAt: nil,
+	}
+}
+
+func InitPayslipDomain() *domain.Payslip {
+	now := time.Now()
+
+	return &domain.Payslip{
+		BaseModel: domain.BaseModel{
+			ID:        1,
+			CreatedAt: now,
+			UpdatedAt: now,
+			CreatedBy: 1,
+		},
+		PayrollPeriodID:     1,
+		UserID:              1,
+		TotalAttendanceDays: 20,
+		TotalOvertimeDays:   5,
+		TotalOvertimeHours:  15,
+		TotalReimbursements: 100000,
+		BaseSalary:          7500000,
+		AttendancePay:       7500000,
+		OvertimePay:         5000000,
+		ReimbursementPay:    100000,
+		TotalSalary:         1260000,
+	}
+}

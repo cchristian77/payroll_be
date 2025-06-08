@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/cchristian77/payroll_be/domain"
 	"github.com/cchristian77/payroll_be/util"
+	"github.com/labstack/echo/v4"
 	"time"
 )
 
@@ -52,4 +53,7 @@ type Repository interface {
 	FindPayslipPaginated(ctx context.Context, payrollPeriodID uint64, search string, p *util.Pagination) ([]*domain.Payslip, error)
 	FindPayslipSumTotalSalary(ctx context.Context, payrollPeriodID uint64) (uint64, error)
 	CreatePayslip(ctx context.Context, data *domain.Payslip) (*domain.Payslip, error)
+
+	// Request Log
+	CreateRequestLog(ec echo.Context, data *domain.RequestLog) (*domain.RequestLog, error)
 }

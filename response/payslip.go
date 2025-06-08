@@ -36,6 +36,7 @@ func NewPayslipFromDomain(p *domain.Payslip) *Payslip {
 	result := &Payslip{
 		ID:                  p.ID,
 		UserID:              p.UserID,
+		PayrollPeriodID:     p.PayrollPeriodID,
 		TotalAttendanceDays: p.TotalAttendanceDays,
 		TotalOvertimeDays:   p.TotalOvertimeDays,
 		TotalOvertimeHours:  p.TotalOvertimeHours,
@@ -48,7 +49,6 @@ func NewPayslipFromDomain(p *domain.Payslip) *Payslip {
 	}
 
 	if p.PayrollPeriod != nil {
-		result.PayrollPeriodID = p.PayrollPeriod.ID
 		result.PayrollStartDate = p.PayrollPeriod.StartDate.Format(time.DateOnly)
 		result.PayrollEndDate = p.PayrollPeriod.EndDate.Format(time.DateOnly)
 	}

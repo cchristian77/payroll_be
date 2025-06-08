@@ -10,6 +10,7 @@ import (
 	"time"
 )
 
+// Authenticate functions to decrypt and verify the provided access token.
 func (b *base) Authenticate(ec echo.Context, accessToken string) (*domain.User, *tokenMaker.Payload, error) {
 	ctx := ec.Request().Context()
 
@@ -18,6 +19,7 @@ func (b *base) Authenticate(ec echo.Context, accessToken string) (*domain.User, 
 		return nil, nil, err
 	}
 
+	// find session by verified payload ID
 	session, err := b.repository.FindSessionBySessionID(ctx, payload.ID.String())
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, nil, err
@@ -31,10 +33,12 @@ func (b *base) Authenticate(ec echo.Context, accessToken string) (*domain.User, 
 		return nil, nil, sharedErrs.InvalidTokenErr
 	}
 
+	// check whether session is expired
 	if time.Now().After(session.AccessTokenExpiresAt) {
 		return nil, nil, sharedErrs.ExpiredTokenErr
 	}
 
+	// find the user data from payload
 	authUser, err := b.repository.FindUserByID(ctx, payload.UserID)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {

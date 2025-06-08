@@ -5,6 +5,7 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+// GetSummary retrieves the summary contains the total take-home pay of all employees.
 func (b *base) GetSummary(ec echo.Context, payrollPeriodID uint64) (*response.PayslipSummary, error) {
 	ctx := ec.Request().Context()
 

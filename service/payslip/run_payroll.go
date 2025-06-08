@@ -16,6 +16,7 @@ import (
 	"time"
 )
 
+// RunPayroll executes payroll for a specified payroll period by calculating salaries for employees.
 func (b *base) RunPayroll(ec echo.Context, input *request.RunPayroll) error {
 	ctx := ec.Request().Context()
 
@@ -39,7 +40,7 @@ func (b *base) RunPayroll(ec echo.Context, input *request.RunPayroll) error {
 	)
 
 	for {
-		// Gather all users with their attendances, overtimes, reimbursements
+		// Gather all batch users
 		users, err := b.repository.FindBatchUsers(ctx, batchSize, lastID)
 		if err != nil {
 			return err
@@ -71,6 +72,8 @@ func (b *base) RunPayroll(ec echo.Context, input *request.RunPayroll) error {
 	return nil
 }
 
+// ProcessPayroll processes payroll for a user for a given payroll period, including calculations and payslip creation.
+// Calculations include attendances, overtimes, and reimbursements pay.
 func (b *base) ProcessPayroll(ec echo.Context, user *domain.User, payrollPeriod *domain.PayrollPeriod) error {
 	ctx := ec.Request().Context()
 
@@ -148,6 +151,9 @@ func (b *base) ProcessPayroll(ec echo.Context, user *domain.User, payrollPeriod 
 	return nil
 }
 
+// calculateAttendancePay computes the attendance pay for a user during a specified payroll period.
+// It multiplies total attendance days by standard work hours and the user's hourly rate.
+// Returns the calculated pay, total attendance days, and any encountered error.
 func (b *base) calculateAttendancePay(ec echo.Context, user *domain.User, payrollPeriod *domain.PayrollPeriod) (uint64, uint, error) {
 	var attendancePay uint64
 
@@ -166,6 +172,7 @@ func (b *base) calculateAttendancePay(ec echo.Context, user *domain.User, payrol
 	return attendancePay, uint(totalAttendanceDays), nil
 }
 
+// calculateOvertimePay calculates the total overtime pay, hours, and days for a user within a specific payroll period.
 func (b *base) calculateOvertimePay(ec echo.Context, user *domain.User, payrollPeriod *domain.PayrollPeriod) (uint64, uint, uint, error) {
 	var overtimePay uint64
 
@@ -189,6 +196,7 @@ func (b *base) calculateOvertimePay(ec echo.Context, user *domain.User, payrollP
 	return overtimePay, totalOvertimeHours, totalOvertimeDays, nil
 }
 
+// calculateReimbursementPay calculates the total reimbursement pay for a user with a PENDING reimbursement status.
 func (b *base) calculateReimbursementPay(ec echo.Context, user *domain.User) (uint64, error) {
 	var reimbursementPay uint64
 
@@ -205,6 +213,7 @@ func (b *base) calculateReimbursementPay(ec echo.Context, user *domain.User) (ui
 	return reimbursementPay, nil
 }
 
+// payReimbursements processes and marks all pending reimbursements for a user as paid, associating them with a payslip ID.
 func (b *base) payReimbursements(ec echo.Context, userID, payslipID uint64) error {
 	ctx := ec.Request().Context()
 

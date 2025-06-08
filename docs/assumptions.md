@@ -9,6 +9,8 @@
    - Summarizing pending reimbursements. 
    - Calculating take home pay \
      ```Take Home Pay = Attendance Pay + Overtime Pay + Reimbursement Pay```
+2. A user can only checkin and checkout once, therefore only 1 attendance per day. 
+3. an attendance is considered as one attendance day with 8 hours, regardless the duration of checkin and checkout.
 
 ### Domain
 1. ```Users```: Manages employee and administrator data including role-based control.
@@ -24,3 +26,4 @@
    For instance, the cronjob runs daily in the midnight to update attendances which have missing check out time. 
 2. Create cronjob to delete expired sessions in the database, running daily. 
 3. Create more unit tests to increase code coverage. 
+4. Handle multiple attendances in one day. 

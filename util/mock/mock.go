@@ -15,6 +15,11 @@ import (
 )
 
 /*
+This file provides functionality to create instances of the specified required structs for unit testing purposes.
+This ensures that tests have consistent and predictable data without the need for creating these objects manually in each test case.
+*/
+
+/*
  * ============================= MOCKING =============================
  */
 
@@ -109,5 +114,45 @@ func InitReimbursementDomain() *domain.Reimbursement {
 		Description: "test_desc",
 		Amount:      7500,
 		Status:      enums.PENDINGReimbursementStatus,
+	}
+}
+
+func InitPayrollPeriodDomain() *domain.PayrollPeriod {
+	now := time.Now()
+
+	return &domain.PayrollPeriod{
+		BaseModel: domain.BaseModel{
+			ID:        1,
+			CreatedAt: now,
+			UpdatedAt: now,
+			CreatedBy: 1,
+		},
+		StartDate:    now,
+		EndDate:      now,
+		PayrollRunAt: nil,
+	}
+}
+
+func InitPayslipDomain() *domain.Payslip {
+	now := time.Now()
+
+	return &domain.Payslip{
+		BaseModel: domain.BaseModel{
+			ID:        1,
+			CreatedAt: now,
+			UpdatedAt: now,
+			CreatedBy: 1,
+		},
+		PayrollPeriodID:     1,
+		UserID:              1,
+		TotalAttendanceDays: 20,
+		TotalOvertimeDays:   5,
+		TotalOvertimeHours:  15,
+		TotalReimbursements: 100000,
+		BaseSalary:          7500000,
+		AttendancePay:       7500000,
+		OvertimePay:         5000000,
+		ReimbursementPay:    100000,
+		TotalSalary:         1260000,
 	}
 }

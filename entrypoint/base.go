@@ -36,13 +36,14 @@ func InitRouter() *echo.Echo {
 		AllowCredentials: false,
 		MaxAge:           300,
 	}))
+	// Setup panic recovery for the router
 	router.Use(middleware.Recover())
 
 	// Config Rate Limiter allows 500 requests/sec
 	router.Use(middleware.RateLimiter(middleware.NewRateLimiterMemoryStore(500)))
 
 	// Config Validator to Router
-	router.Validator = util.RegisterValidator()
+	router.Validator = util.InitValidator()
 
 	// Register RequestLog to Router Middleware
 	router.Use(logger.RequestLog)
@@ -97,10 +98,12 @@ func registerRoutes(router *echo.Echo) {
 	if err != nil {
 		logger.Fatal(fmt.Sprintf("reimbursement service initialization error: %v", err))
 	}
+
 	payrollPeriodService, err := payrollPeriod.NewService(repository, gormDB)
 	if err != nil {
 		logger.Fatal(fmt.Sprintf("payroll period service initialization error: %v", err))
 	}
+
 	payslipService, err := payslip.NewService(repository, gormDB)
 	if err != nil {
 		logger.Fatal(fmt.Sprintf("payslip.go service initialization error: %v", err))

@@ -19,26 +19,13 @@ func Contains[T comparable](source []T, target T) bool {
 	return false
 }
 
-func GetUnderlyingTypeAndValue(i interface{}) (reflect.Value, reflect.Type, bool) {
-	v := reflect.ValueOf(i)
-	if v.Kind() == reflect.Pointer {
-		if v.IsNil() {
-			return v.Elem(), v.Type(), v.IsNil()
-		}
-
-		return v.Elem(), v.Elem().Type(), v.IsNil()
-	}
-
-	return v, reflect.TypeOf(i), false
-}
-
 func CompareData[T any](source, target T, depth uint) error {
 	if depth == 0 {
 		return nil
 	}
 
-	valuesource, typesource, sourceIsNil := GetUnderlyingTypeAndValue(source)
-	valuetarget, typetarget, targetIsNil := GetUnderlyingTypeAndValue(target)
+	valuesource, typesource, sourceIsNil := getUnderlyingTypeAndValue(source)
+	valuetarget, typetarget, targetIsNil := getUnderlyingTypeAndValue(target)
 
 	if sourceIsNil && targetIsNil {
 		return nil
@@ -65,8 +52,8 @@ func CompareData[T any](source, target T, depth uint) error {
 
 		// If fields are timestamp, use the time.Equal function
 		if strings.Contains(fieldValuesource.String(), "time.Time") {
-			valsourceTime, _, sourceIsNil := GetUnderlyingTypeAndValue(fieldValuesource.Interface())
-			valtargetTime, _, targetIsNil := GetUnderlyingTypeAndValue(fieldValuetarget.Interface())
+			valsourceTime, _, sourceIsNil := getUnderlyingTypeAndValue(fieldValuesource.Interface())
+			valtargetTime, _, targetIsNil := getUnderlyingTypeAndValue(fieldValuetarget.Interface())
 			if sourceIsNil && targetIsNil {
 				continue
 			}
@@ -126,4 +113,17 @@ func CompareData[T any](source, target T, depth uint) error {
 	}
 
 	return nil
+}
+
+func getUnderlyingTypeAndValue(i interface{}) (reflect.Value, reflect.Type, bool) {
+	v := reflect.ValueOf(i)
+	if v.Kind() == reflect.Pointer {
+		if v.IsNil() {
+			return v.Elem(), v.Type(), v.IsNil()
+		}
+
+		return v.Elem(), v.Elem().Type(), v.IsNil()
+	}
+
+	return v, reflect.TypeOf(i), false
 }

@@ -30,8 +30,8 @@ var (
 
 // AUTH ERROR
 var (
-	InvalidTokenErr = errors.New("token is invalid")
-	ExpiredTokenErr = errors.New("token has expired")
+	InvalidTokenErr = errors.New("invalid token")
+	ExpiredTokenErr = errors.New("expired token")
 )
 
 type BusinessValidationErr struct {

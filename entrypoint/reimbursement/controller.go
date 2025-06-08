@@ -9,14 +9,17 @@ import (
 	"net/http"
 )
 
+// Controller manages reimbursement operations.
 type Controller struct {
 	reimbursement reimbursement.Service
 }
 
+// NewController initializes a new Controller instance.
 func NewController(reimbursement reimbursement.Service) *Controller {
 	return &Controller{reimbursement: reimbursement}
 }
 
+// RegisterRoutes configures the routes for the Controller.
 func (c *Controller) RegisterRoutes(router *echo.Echo) {
 	groupV1 := router.Group("/reimbursements/v1", middleware.GetAuthorization().Authenticate())
 	groupV1.POST("", c.Upsert)

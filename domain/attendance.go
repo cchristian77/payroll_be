@@ -2,6 +2,7 @@ package domain
 
 import "time"
 
+// Attendance represents the attendance record of a user for a specific date.
 type Attendance struct {
 	BaseModel
 

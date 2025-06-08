@@ -12,7 +12,7 @@ type Validator struct {
 	validate *validator.Validate
 }
 
-func RegisterValidator() *Validator {
+func InitValidator() *Validator {
 	if v == nil {
 		v = &Validator{
 			validate: validator.New(),

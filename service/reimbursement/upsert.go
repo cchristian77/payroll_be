@@ -17,8 +17,8 @@ func (b *base) Upsert(ec echo.Context, input *request.UpsertReimbursement) (*res
 
 	now := time.Now()
 
-	// Check whether the reimbursement exists on update
 	if input.ID != 0 {
+		// Check whether the reimbursement exists on update
 		reimbursementExists, err := b.repository.FindReimbursementByIDAndUserID(ctx, input.ID, authUser.ID)
 		if err != nil {
 			return nil, err
@@ -28,6 +28,7 @@ func (b *base) Upsert(ec echo.Context, input *request.UpsertReimbursement) (*res
 			return nil, sharedErrs.NotFoundErr
 		}
 
+		// paid reimbursement cannot be updated.
 		if reimbursementExists.Status == enums.PAIDReimbursementStatus {
 			return nil, sharedErrs.NewBusinessValidationErr("Reimbursement has already been paid.")
 		}

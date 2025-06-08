@@ -14,22 +14,21 @@ import (
 	_ "github.com/jackc/pgx/v5/stdlib"
 )
 
-var counts int64
-
+// openDB opens a database connection using pgx driver
 func openDB(dsn string) (*sql.DB, error) {
 	db, err := sql.Open("pgx", dsn)
 	if err != nil {
 		return nil, err
 	}
 
-	err = db.Ping()
-	if err != nil {
+	if err = db.Ping(); err != nil {
 		return nil, err
 	}
 
 	return db, nil
 }
 
+// OpenGormDB initializes a gorm.DB instance from sql.DB
 func OpenGormDB(sqlDB *sql.DB) (*gorm.DB, error) {
 	gormDB, err := gorm.Open(postgres.New(postgres.Config{
 		Conn: sqlDB,
@@ -43,30 +42,27 @@ func OpenGormDB(sqlDB *sql.DB) (*gorm.DB, error) {
 	return gormDB, err
 }
 
+// ConnectToDB establishes a connection to the PostgreSQL database using the configured DSN and retries on failure.
 func ConnectToDB() *sql.DB {
+	var counts int
+
 	// get dsn from env.json
-	dsn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
-		config.Env.Database.Host,
-		config.Env.Database.Port,
-		config.Env.Database.User,
-		config.Env.Database.Password,
-		config.Env.Database.Name,
-	)
+	dsn := config.Env.DSN()
 
 	// get dsn from docker
 	//dsn := os.Getenv("DSN")
 	for {
 		connection, err := openDB(dsn)
 		if err != nil {
-			logger.Info("Postgres not yet ready")
-			counts++
+			logger.Warn(fmt.Sprintf("Postgres not yet ready: %v", err))
+			counts += 1
 		} else {
 			logger.Info("Connected to Postgres")
 			return connection
 		}
 
 		if counts > 10 {
-			logger.Error(err.Error())
+			logger.Error(fmt.Sprintf("Failed to connect to Postgres: %v", err))
 			return nil
 		}
 

@@ -23,13 +23,14 @@ func (r *repo) CreateSession(ctx context.Context, data *domain.Session) (*domain
 	return data, nil
 }
 
-func (r *repo) FindSessionByID(ctx context.Context, id uint64) (*domain.Session, error) {
+func (r *repo) FindSessionBySessionID(ctx context.Context, sessionID string) (*domain.Session, error) {
 	var result *domain.Session
 
 	db, _ := database.ConnFromContext(ctx, r.DB)
 
 	err := db.WithContext(ctx).
-		First(&result, id).
+		Where("session_id = ?", sessionID).
+		First(&result).
 		Error
 	if err != nil {
 		logger.Error(fmt.Sprintf("[REPOSITORY] Failed on find session by id : %v", err))
@@ -49,23 +50,6 @@ func (r *repo) DeleteSessionByID(ctx context.Context, id uint64) error {
 		Error
 	if err != nil {
 		logger.Error(fmt.Sprintf("[REPOSITORY] Failed on delete session by id : %v", err))
-
-		return err
-	}
-
-	return nil
-}
-
-func (r *repo) RevokeSessionByID(ctx context.Context, id uint64) error {
-	db, _ := database.ConnFromContext(ctx, r.DB)
-
-	err := db.WithContext(ctx).
-		Model(&domain.Session{}).
-		Where("id = ?", id).
-		Update("is_revoked", true).
-		Error
-	if err != nil {
-		logger.Error(fmt.Sprintf("[REPOSITORY] Failed on revoke session by id : %v", err))
 
 		return err
 	}

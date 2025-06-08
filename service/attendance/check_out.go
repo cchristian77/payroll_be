@@ -23,10 +23,12 @@ func (b *base) CheckOut(ec echo.Context) (*response.Attendance, error) {
 		return nil, err
 	}
 
+	// before checking out, the user should checkin first.
 	if attendance == nil {
 		return nil, sharedErrs.NewBusinessValidationErr(fmt.Sprintf("You haven't checked in yet today."))
 	}
 
+	// validated if user's already checkout
 	if attendance.CheckOut != nil {
 		return nil, sharedErrs.NewBusinessValidationErr(
 			fmt.Sprintf("You have already checked out at %s", attendance.CheckOut.Format(time.DateTime)),

@@ -7,6 +7,7 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+// FindPayslipList retrieves the paginated list of payslip for each employee.
 func (b *base) FindPayslipList(ec echo.Context, input *request.FindPayslipList) (*response.BasePagination[[]*response.Payslip], error) {
 	ctx := ec.Request().Context()
 

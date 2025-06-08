@@ -4,18 +4,19 @@ import (
 	"context"
 	"github.com/cchristian77/payroll_be/domain"
 	"github.com/cchristian77/payroll_be/util"
+	"github.com/labstack/echo/v4"
 	"time"
 )
 
 //go:generate mockgen -package repository -source=contract.go -destination=mock_repository.go *
 
+// Repository is an interface defining methods for data access and manipulation across various domain models.
 type Repository interface {
 
 	// Session
 	CreateSession(ctx context.Context, data *domain.Session) (*domain.Session, error)
-	FindSessionByID(ctx context.Context, id uint64) (*domain.Session, error)
+	FindSessionBySessionID(ctx context.Context, sessionID string) (*domain.Session, error)
 	DeleteSessionByID(ctx context.Context, id uint64) error
-	RevokeSessionByID(ctx context.Context, id uint64) error
 
 	// User
 	FindUserByUsername(ctx context.Context, username string) (*domain.User, error)
@@ -52,4 +53,7 @@ type Repository interface {
 	FindPayslipPaginated(ctx context.Context, payrollPeriodID uint64, search string, p *util.Pagination) ([]*domain.Payslip, error)
 	FindPayslipSumTotalSalary(ctx context.Context, payrollPeriodID uint64) (uint64, error)
 	CreatePayslip(ctx context.Context, data *domain.Payslip) (*domain.Payslip, error)
+
+	// Request Log
+	CreateRequestLog(ec echo.Context, data *domain.RequestLog) (*domain.RequestLog, error)
 }

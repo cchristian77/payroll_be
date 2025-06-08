@@ -9,14 +9,17 @@ import (
 	"net/http"
 )
 
+// Controller manages overtime operations.
 type Controller struct {
 	overtime overtime.Service
 }
 
+// NewController initializes a new Controller instance.
 func NewController(overtime overtime.Service) *Controller {
 	return &Controller{overtime: overtime}
 }
 
+// RegisterRoutes configures the routes for the Controller.
 func (c *Controller) RegisterRoutes(router *echo.Echo) {
 	groupV1 := router.Group("/overtimes/v1", middleware.GetAuthorization().Authenticate())
 	groupV1.POST("", c.Upsert)

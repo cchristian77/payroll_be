@@ -84,6 +84,10 @@ Before running the application, you need to setup the necessary prerequisites, a
     ```bash
     curl http://localhost:9000/healthcheck
     ```
+8. Populate database
+   ```bash
+    curl http://localhost:9000/auth/v1/register
+    ```
 
 ### Author
 Chris Christian 

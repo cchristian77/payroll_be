@@ -13,6 +13,8 @@ import (
 
 // ErrorHandler returns JSON including status code and error message if error occurs
 func ErrorHandler(err error, ec echo.Context) {
+	ctx := ec.Request().Context()
+
 	var statusCode int
 	var errorMsg string
 
@@ -27,7 +29,7 @@ func ErrorHandler(err error, ec echo.Context) {
 	}
 
 	// record error to log
-	logger.Error(errorMsg)
+	logger.Error(ctx, errorMsg)
 
 	// Return JSON with status code and error message
 	if !ec.Response().Committed {

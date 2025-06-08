@@ -54,19 +54,19 @@ func ConnectToDB() *sql.DB {
 	for {
 		connection, err := openDB(dsn)
 		if err != nil {
-			logger.Warn(fmt.Sprintf("Postgres not yet ready: %v", err))
+			logger.L().Warn(fmt.Sprintf("Postgres not yet ready: %v", err))
 			counts += 1
 		} else {
-			logger.Info("Connected to Postgres")
+			logger.L().Info("Connected to Postgres")
 			return connection
 		}
 
 		if counts > 10 {
-			logger.Error(fmt.Sprintf("Failed to connect to Postgres: %v", err))
+			logger.L().Error(fmt.Sprintf("Failed to connect to Postgres: %v", err))
 			return nil
 		}
 
-		logger.Info("backing off for two seconds...")
+		logger.L().Info("backing off for two seconds...")
 		time.Sleep(2 * time.Second)
 		continue
 	}

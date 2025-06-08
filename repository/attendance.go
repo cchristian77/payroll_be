@@ -20,7 +20,7 @@ func (r *repo) FindAttendanceByUserIDAndDate(ctx context.Context, userID uint64,
 		First(&data).
 		Error
 	if err != nil {
-		logger.Error(fmt.Sprintf("[REPOSITORY] Failed on find attendance by user id and date : %v", err))
+		logger.Error(ctx, fmt.Sprintf("[REPOSITORY] Failed on find attendance by user id and date : %v", err))
 
 		return nil, err
 	}
@@ -38,7 +38,7 @@ func (r *repo) FindAttendanceByIDAndUserID(ctx context.Context, id, userID uint6
 		First(&data).
 		Error
 	if err != nil {
-		logger.Error(fmt.Sprintf("[REPOSITORY] Failed on find attendance by id and user id: %v", err))
+		logger.Error(ctx, fmt.Sprintf("[REPOSITORY] Failed on find attendance by id and user id: %v", err))
 
 		return nil, err
 	}
@@ -56,7 +56,7 @@ func (r *repo) FindAttendancesByUserIDAndDateRange(ctx context.Context, userID u
 		Find(&data).
 		Error
 	if err != nil {
-		logger.Error(fmt.Sprintf("[REPOSITORY] Failed on find attendance by id and date range: %v", err))
+		logger.Error(ctx, fmt.Sprintf("[REPOSITORY] Failed on find attendance by id and date range: %v", err))
 
 		return nil, err
 	}
@@ -72,7 +72,7 @@ func (r *repo) CreateAttendance(ctx context.Context, data *domain.Attendance) (*
 		Create(&data).
 		Error
 	if err != nil {
-		logger.Error(fmt.Sprintf("[REPOSITORY] Failed on create attendance : %v", err))
+		logger.Error(ctx, fmt.Sprintf("[REPOSITORY] Failed on create attendance : %v", err))
 
 		return data, err
 	}
@@ -89,7 +89,7 @@ func (r *repo) UpdateAttendance(ctx context.Context, data *domain.Attendance) er
 		Updates(data).
 		Error
 	if err != nil {
-		logger.Error(fmt.Sprintf("[REPOSITORY] Failed on update attendance : %v", err))
+		logger.Error(ctx, fmt.Sprintf("[REPOSITORY] Failed on update attendance : %v", err))
 
 		return err
 	}

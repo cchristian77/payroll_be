@@ -18,7 +18,7 @@ func (r *repo) FindUserByUsername(ctx context.Context, username string) (*domain
 		First(&result).
 		Error
 	if err != nil {
-		logger.Error(fmt.Sprintf("[REPOSITORY] Failed on find user by username : %v", err))
+		logger.Error(ctx, fmt.Sprintf("[REPOSITORY] Failed on find user by username : %v", err))
 
 		return nil, err
 	}
@@ -35,7 +35,7 @@ func (r *repo) FindUserByID(ctx context.Context, id uint64) (*domain.User, error
 		First(&result, id).
 		Error
 	if err != nil {
-		logger.Error(fmt.Sprintf("[REPOSITORY] Failed on find user by id : %v", err))
+		logger.Error(ctx, fmt.Sprintf("[REPOSITORY] Failed on find user by id : %v", err))
 
 		return nil, err
 	}
@@ -54,7 +54,7 @@ func (r *repo) FindBatchUsers(ctx context.Context, batchSize int, lastID uint64)
 		Find(&result).
 		Error
 	if err != nil {
-		logger.Error(fmt.Sprintf("[REPOSITORY] Failed on find batch users : %v", err))
+		logger.Error(ctx, fmt.Sprintf("[REPOSITORY] Failed on find batch users : %v", err))
 
 		return nil, err
 	}
@@ -69,7 +69,7 @@ func (r *repo) CreateUser(ctx context.Context, data *domain.User) (*domain.User,
 		Create(&data).
 		Error
 	if err != nil {
-		logger.Error(fmt.Sprintf("[REPOSITORY] Failed on create user : %v", err))
+		logger.Error(ctx, fmt.Sprintf("[REPOSITORY] Failed on create user : %v", err))
 
 		return nil, err
 	}

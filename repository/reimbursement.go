@@ -20,7 +20,7 @@ func (r *repo) FindReimbursementByIDAndUserID(ctx context.Context, id, userID ui
 		First(&data).
 		Error
 	if err != nil {
-		logger.Error(fmt.Sprintf("[REPOSITORY] Failed on find reimbursement by id and user id : %v", err))
+		logger.Error(ctx, fmt.Sprintf("[REPOSITORY] Failed on find reimbursement by id and user id : %v", err))
 
 		return nil, err
 	}
@@ -38,7 +38,7 @@ func (r *repo) FindReimbursementsByUserIDAndStatus(ctx context.Context, userID u
 		Find(&data).
 		Error
 	if err != nil {
-		logger.Error(fmt.Sprintf("[REPOSITORY] Failed on find reimbursements by id and status : %v", err))
+		logger.Error(ctx, fmt.Sprintf("[REPOSITORY] Failed on find reimbursements by id and status : %v", err))
 
 		return nil, err
 	}
@@ -57,7 +57,7 @@ func (r *repo) FindReimbursementsByPayslipID(ctx context.Context, payslipID uint
 		Find(&data).
 		Error
 	if err != nil {
-		logger.Error(fmt.Sprintf("[REPOSITORY] Failed on find reimbursements by payslip id : %v", err))
+		logger.Error(ctx, fmt.Sprintf("[REPOSITORY] Failed on find reimbursements by payslip id : %v", err))
 
 		return nil, err
 	}
@@ -88,7 +88,7 @@ func (r *repo) UpsertReimbursement(ctx context.Context, data *domain.Reimburseme
 		Create(&data).
 		Error
 	if err != nil {
-		logger.Error(fmt.Sprintf("[REPOSITORY] Failed on upsert reimbursement : %v", err))
+		logger.Error(ctx, fmt.Sprintf("[REPOSITORY] Failed on upsert reimbursement : %v", err))
 
 		return data, err
 	}

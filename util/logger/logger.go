@@ -59,6 +59,7 @@ func RequestLog(next echo.HandlerFunc) echo.HandlerFunc {
 
 		request := ec.Request()
 		response := ec.Response()
+		ctx := ec.Request().Context()
 
 		fields := []zapcore.Field{
 			zap.Int("status", response.Status),
@@ -68,43 +69,45 @@ func RequestLog(next echo.HandlerFunc) echo.HandlerFunc {
 			zap.String("remote_ip", ec.RealIP()),
 		}
 
+		fields = append(getZapFieldsFromCtx(ctx), fields...)
+
 		statusCode := response.Status
 		switch {
 		case statusCode >= 500:
-			logger.Error("Internal Server Error", fields...)
+			L().Error("Internal Server Error", fields...)
 		case statusCode >= 400:
-			logger.Warn("Client-side Error", fields...)
+			L().Warn("Client-side Error", fields...)
 		case statusCode >= 300:
-			logger.Info("Redirection", fields...)
+			L().Info("Redirection", fields...)
 		default:
-			logger.Debug("Success", fields...)
+			L().Debug("Success", fields...)
 		}
 
 		return nil
 	}
 }
 
-func Fatal(message string) {
+func L() *zap.Logger {
+	return Get()
+}
+
+func Fatal(ctx context.Context, message string) {
 	logger.Fatal(message)
 }
 
-func Error(message string) {
-	logger.Error(message)
+func Error(ctx context.Context, message string) {
+	logger.Error(message, getZapFieldsFromCtx(ctx)...)
 }
 
-func Warn(message string) {
+func Warn(ctx context.Context, message string) {
 	logger.Warn(message)
 }
 
-func Info(message string) {
-	logger.Info(message)
-}
-
-func InfoWithCtx(ctx context.Context, message string) {
+func Info(ctx context.Context, message string) {
 	logger.Info(message, getZapFieldsFromCtx(ctx)...)
 }
 
-func Debug(message string) {
+func Debug(ctx context.Context, message string) {
 	logger.Debug(message)
 }
 

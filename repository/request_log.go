@@ -12,7 +12,7 @@ func (r *repo) CreateRequestLog(ctx context.Context, data *domain.RequestLog) (*
 	db, _ := database.ConnFromContext(ctx, r.DB)
 
 	if err := db.WithContext(ctx).Create(&data).Error; err != nil {
-		logger.Error(fmt.Sprintf("[REPOSITORY] Failed on create request log : %v", err))
+		logger.Error(ctx, fmt.Sprintf("[REPOSITORY] Failed on create request log : %v", err))
 
 		return nil, err
 	}

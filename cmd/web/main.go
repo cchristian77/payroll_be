@@ -37,7 +37,7 @@ func init() {
 
 func main() {
 	// Initialized Logger
-	log := logger.Init()
+	log := logger.Get()
 	defer log.Sync()
 
 	router := api.InitRouter()

@@ -24,8 +24,6 @@ func (suite *PayslipTestSuite) Test_GetSummary() {
 		{
 			name: "success",
 			prepareMock: func() {
-				ctx := suite.ec.Request().Context()
-
 				payrollPeriod.PayrollRunAt = &payrollPeriod.CreatedAt
 
 				totalTakeHomePay := uint64(100000)
@@ -33,10 +31,10 @@ func (suite *PayslipTestSuite) Test_GetSummary() {
 					TotalTakeHomePay: totalTakeHomePay,
 				}
 
-				suite.repo.EXPECT().FindPayrollPeriodByID(ctx, gomock.Eq(payrollPeriodID)).
+				suite.repo.EXPECT().FindPayrollPeriodByID(suite.ctx, gomock.Eq(payrollPeriodID)).
 					Return(payrollPeriod, nil).
 					Times(1)
-				suite.repo.EXPECT().FindPayslipSumTotalSalary(ctx, gomock.Eq(payrollPeriodID)).
+				suite.repo.EXPECT().FindPayslipSumTotalSalary(suite.ctx, gomock.Eq(payrollPeriodID)).
 					Return(totalTakeHomePay, nil).
 					Times(1)
 			},
@@ -51,7 +49,7 @@ func (suite *PayslipTestSuite) Test_GetSummary() {
 			tc.prepareMock()
 
 			// Act
-			result, err := suite.payslipService.GetSummary(suite.ec, payrollPeriodID)
+			result, err := suite.payslipService.GetSummary(suite.ctx, payrollPeriodID)
 
 			// Assert
 			assert.Equal(t, tc.wantErr, err != nil, "error expected %v, but actual: %v", tc.wantErr, err)

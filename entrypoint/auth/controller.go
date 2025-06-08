@@ -29,6 +29,8 @@ func (c *Controller) RegisterRoutes(router *echo.Echo) {
 }
 
 func (c *Controller) Login(ec echo.Context) error {
+	ctx := ec.Request().Context()
+
 	var input request.Login
 
 	if err := ec.Bind(&input); err != nil {
@@ -39,7 +41,10 @@ func (c *Controller) Login(ec echo.Context) error {
 		return err
 	}
 
-	data, err := c.auth.Login(ec, &input)
+	input.UserAgent = ec.Request().UserAgent()
+	input.ClientIP = ec.RealIP()
+
+	data, err := c.auth.Login(ctx, &input)
 	if err != nil {
 		return err
 	}
@@ -48,7 +53,7 @@ func (c *Controller) Login(ec echo.Context) error {
 }
 
 func (c *Controller) Logout(ec echo.Context) error {
-	if err := c.auth.Logout(ec); err != nil {
+	if err := c.auth.Logout(ec.Request().Context()); err != nil {
 		return err
 	}
 
@@ -56,7 +61,7 @@ func (c *Controller) Logout(ec echo.Context) error {
 }
 
 func (c *Controller) CurrentUser(ec echo.Context) error {
-	authUser := util.EchoCntextAuthUser(ec)
+	authUser := util.AuthUserFromCtx(ec.Request().Context())
 
 	return response.NewSuccessResponse(ec, http.StatusOK, response.User{
 		ID:       authUser.ID,
@@ -67,7 +72,7 @@ func (c *Controller) CurrentUser(ec echo.Context) error {
 }
 
 func (c *Controller) Register(ec echo.Context) error {
-	if err := c.auth.Register(ec); err != nil {
+	if err := c.auth.Register(ec.Request().Context()); err != nil {
 		return err
 	}
 

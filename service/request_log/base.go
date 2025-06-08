@@ -1,14 +1,14 @@
 package request_log
 
 import (
+	"context"
 	"github.com/cchristian77/payroll_be/domain"
 	"github.com/cchristian77/payroll_be/repository"
-	"github.com/labstack/echo/v4"
 	"gorm.io/gorm"
 )
 
 type Service interface {
-	Log(ec echo.Context, activity string, referenceID uint64, entity string) (*domain.RequestLog, error)
+	Log(ctx context.Context, activity string, referenceID uint64, entity string) (*domain.RequestLog, error)
 }
 
 type base struct {

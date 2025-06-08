@@ -31,12 +31,14 @@ func (c *Controller) RegisterRoutes(router *echo.Echo) {
 
 // MyPayslip retrieves the payslip on the specified payroll_period_id for the authenticated user.
 func (c *Controller) MyPayslip(ec echo.Context) error {
+	ctx := ec.Request().Context()
+
 	payrollPeriodID, err := strconv.Atoi(ec.QueryParam("payroll_period_id"))
 	if err != nil || payrollPeriodID <= 0 {
 		return response.NewErrorResponse(ec, http.StatusBadRequest, "Please provide a valid payroll_period_id as integer", err)
 	}
 
-	result, err := c.payslip.FindUserPayslip(ec, uint64(payrollPeriodID))
+	result, err := c.payslip.FindUserPayslip(ctx, uint64(payrollPeriodID))
 	if err != nil {
 		return err
 	}

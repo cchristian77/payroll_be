@@ -1,15 +1,15 @@
 package reimbursement
 
 import (
+	"context"
 	"github.com/cchristian77/payroll_be/repository"
 	"github.com/cchristian77/payroll_be/request"
 	"github.com/cchristian77/payroll_be/response"
-	"github.com/labstack/echo/v4"
 	"gorm.io/gorm"
 )
 
 type Service interface {
-	Upsert(ec echo.Context, input *request.UpsertReimbursement) (*response.Reimbursement, error)
+	Upsert(ctx context.Context, input *request.UpsertReimbursement) (*response.Reimbursement, error)
 }
 
 type base struct {

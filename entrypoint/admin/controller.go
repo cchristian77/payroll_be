@@ -40,6 +40,8 @@ func (c *Controller) RegisterRoutes(router *echo.Echo) {
 
 // UpsertPayrollPeriod creates or updates a payroll period.
 func (c *Controller) UpsertPayrollPeriod(ec echo.Context) error {
+	ctx := ec.Request().Context()
+
 	var input request.UpsertPayrollPeriod
 
 	if err := ec.Bind(&input); err != nil {
@@ -50,7 +52,7 @@ func (c *Controller) UpsertPayrollPeriod(ec echo.Context) error {
 		return err
 	}
 
-	data, err := c.payrollPeriod.Upsert(ec, &input)
+	data, err := c.payrollPeriod.Upsert(ctx, &input)
 	if err != nil {
 		return err
 	}
@@ -60,6 +62,8 @@ func (c *Controller) UpsertPayrollPeriod(ec echo.Context) error {
 
 // RunPayroll handles the execution of the payroll process for a specific payroll period.
 func (c *Controller) RunPayroll(ec echo.Context) error {
+	ctx := ec.Request().Context()
+
 	var input request.RunPayroll
 
 	if err := ec.Bind(&input); err != nil {
@@ -70,7 +74,7 @@ func (c *Controller) RunPayroll(ec echo.Context) error {
 		return err
 	}
 
-	if err := c.payslip.RunPayroll(ec, &input); err != nil {
+	if err := c.payslip.RunPayroll(ctx, &input); err != nil {
 		return err
 	}
 
@@ -79,6 +83,8 @@ func (c *Controller) RunPayroll(ec echo.Context) error {
 
 // FindPayslipList retrieves a paginated list of payslips.
 func (c *Controller) FindPayslipList(ec echo.Context) error {
+	ctx := ec.Request().Context()
+
 	var input request.FindPayslipList
 	var err error
 
@@ -99,7 +105,7 @@ func (c *Controller) FindPayslipList(ec echo.Context) error {
 	input.PayrollPeriodID = uint64(payrollPeriodID)
 	input.Search = ec.QueryParam("search")
 
-	result, err := c.payslip.FindPayslipList(ec, &input)
+	result, err := c.payslip.FindPayslipList(ctx, &input)
 	if err != nil {
 		return err
 	}
@@ -109,12 +115,14 @@ func (c *Controller) FindPayslipList(ec echo.Context) error {
 
 // PayslipSummary fetches a summary of payslips for a specified payroll period ID.
 func (c *Controller) PayslipSummary(ec echo.Context) error {
+	ctx := ec.Request().Context()
+
 	payrollPeriodID, err := strconv.Atoi(ec.QueryParam("payroll_period_id"))
 	if err != nil || payrollPeriodID <= 0 {
 		return response.NewErrorResponse(ec, http.StatusBadRequest, "Please provide a valid payroll_period_id as integer", err)
 	}
 
-	result, err := c.payslip.GetSummary(ec, uint64(payrollPeriodID))
+	result, err := c.payslip.GetSummary(ctx, uint64(payrollPeriodID))
 	if err != nil {
 		return err
 	}

@@ -16,7 +16,6 @@ import (
 
 	domain "github.com/cchristian77/payroll_be/domain"
 	util "github.com/cchristian77/payroll_be/util"
-	echo "github.com/labstack/echo/v4"
 	gomock "go.uber.org/mock/gomock"
 )
 
@@ -75,18 +74,18 @@ func (mr *MockRepositoryMockRecorder) CreatePayslip(ctx, data any) *gomock.Call 
 }
 
 // CreateRequestLog mocks base method.
-func (m *MockRepository) CreateRequestLog(ec echo.Context, data *domain.RequestLog) (*domain.RequestLog, error) {
+func (m *MockRepository) CreateRequestLog(ctx context.Context, data *domain.RequestLog) (*domain.RequestLog, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreateRequestLog", ec, data)
+	ret := m.ctrl.Call(m, "CreateRequestLog", ctx, data)
 	ret0, _ := ret[0].(*domain.RequestLog)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // CreateRequestLog indicates an expected call of CreateRequestLog.
-func (mr *MockRepositoryMockRecorder) CreateRequestLog(ec, data any) *gomock.Call {
+func (mr *MockRepositoryMockRecorder) CreateRequestLog(ctx, data any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateRequestLog", reflect.TypeOf((*MockRepository)(nil).CreateRequestLog), ec, data)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateRequestLog", reflect.TypeOf((*MockRepository)(nil).CreateRequestLog), ctx, data)
 }
 
 // CreateSession mocks base method.

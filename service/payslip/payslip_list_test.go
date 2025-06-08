@@ -39,17 +39,15 @@ func (suite *PayslipTestSuite) Test_PayslipList() {
 		{
 			name: "success",
 			prepareMock: func() {
-				ctx := suite.ec.Request().Context()
-
 				payrollPeriod.PayrollRunAt = &payrollPeriod.CreatedAt
 				for _, payslip := range payslips {
 					expected = append(expected, response.NewPayslipFromDomain(payslip))
 				}
 
-				suite.repo.EXPECT().FindPayrollPeriodByID(ctx, gomock.Eq(input.PayrollPeriodID)).
+				suite.repo.EXPECT().FindPayrollPeriodByID(suite.ctx, gomock.Eq(input.PayrollPeriodID)).
 					Return(payrollPeriod, nil).
 					Times(1)
-				suite.repo.EXPECT().FindPayslipPaginated(ctx, gomock.Eq(input.PayrollPeriodID), gomock.Eq(input.Search), gomock.Any()).
+				suite.repo.EXPECT().FindPayslipPaginated(suite.ctx, gomock.Eq(input.PayrollPeriodID), gomock.Eq(input.Search), gomock.Any()).
 					Return(payslips, nil).
 					Times(1)
 
@@ -65,7 +63,7 @@ func (suite *PayslipTestSuite) Test_PayslipList() {
 			tc.prepareMock()
 
 			// Act
-			result, err := suite.payslipService.FindPayslipList(suite.ec, input)
+			result, err := suite.payslipService.FindPayslipList(suite.ctx, input)
 
 			// Assert
 			assert.Equal(t, tc.wantErr, err != nil, "error expected %v, but actual: %v", tc.wantErr, err)

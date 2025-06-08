@@ -70,7 +70,7 @@ func (suite *PaginationTestSuite) Test_Page() {
 func (suite *PaginationTestSuite) Test_Total() {
 	type testCase struct {
 		name           string
-		expectedResult int
+		expectedResult int64
 		inputTotal     int64
 	}
 

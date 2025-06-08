@@ -26,6 +26,8 @@ func (c *Controller) RegisterRoutes(router *echo.Echo) {
 }
 
 func (c *Controller) Upsert(ec echo.Context) error {
+	ctx := ec.Request().Context()
+
 	var input request.UpsertOvertime
 
 	if err := ec.Bind(&input); err != nil {
@@ -36,7 +38,7 @@ func (c *Controller) Upsert(ec echo.Context) error {
 		return err
 	}
 
-	data, err := c.overtime.Upsert(ec, &input)
+	data, err := c.overtime.Upsert(ctx, &input)
 	if err != nil {
 		return err
 	}

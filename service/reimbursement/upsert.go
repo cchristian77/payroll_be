@@ -1,19 +1,18 @@
 package reimbursement
 
 import (
+	"context"
 	"github.com/cchristian77/payroll_be/domain"
 	"github.com/cchristian77/payroll_be/domain/enums"
 	"github.com/cchristian77/payroll_be/request"
 	"github.com/cchristian77/payroll_be/response"
 	"github.com/cchristian77/payroll_be/util"
 	sharedErrs "github.com/cchristian77/payroll_be/util/errors"
-	"github.com/labstack/echo/v4"
 	"time"
 )
 
-func (b *base) Upsert(ec echo.Context, input *request.UpsertReimbursement) (*response.Reimbursement, error) {
-	ctx := ec.Request().Context()
-	authUser := util.EchoCntextAuthUser(ec)
+func (b *base) Upsert(ctx context.Context, input *request.UpsertReimbursement) (*response.Reimbursement, error) {
+	authUser := util.AuthUserFromCtx(ctx)
 
 	now := time.Now()
 

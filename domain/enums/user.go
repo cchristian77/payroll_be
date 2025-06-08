@@ -23,4 +23,5 @@ const (
 const (
 	AuthUserCtxKey  = "auth_user"
 	SessionIDCtxKey = "session_id"
+	RequestIDCtxKey = "request_id"
 )

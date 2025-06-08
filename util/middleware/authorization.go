@@ -6,6 +6,7 @@ import (
 	"github.com/cchristian77/payroll_be/service/auth"
 	"github.com/cchristian77/payroll_be/util"
 	sharedErrs "github.com/cchristian77/payroll_be/util/errors"
+	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"net/http"
 	"strings"
@@ -58,7 +59,7 @@ func (a *Authorization) Authenticate() echo.MiddlewareFunc {
 func (a *Authorization) authenticationWithRoles(allowedRoles ...string) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(ec echo.Context) error {
-			/// gather token from the header
+			// ather token from the header
 			authHeader := ec.Request().Header.Get(authHeaderKey)
 			if authHeader == "" {
 				return sharedErrs.UnauthorizedErr
@@ -87,6 +88,7 @@ func (a *Authorization) authenticationWithRoles(allowedRoles ...string) echo.Mid
 			if util.Contains(allowedRoles, authUser.Role) {
 				ec.Set(enums.AuthUserCtxKey, authUser)
 				ec.Set(enums.SessionIDCtxKey, payload.ID.String())
+				ec.Set(enums.RequestIDCtxKey, uuid.New().String())
 
 				return next(ec)
 			}

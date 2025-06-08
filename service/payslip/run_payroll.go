@@ -1,6 +1,7 @@
 package payslip
 
 import (
+	"context"
 	"database/sql"
 	"errors"
 	"fmt"
@@ -64,8 +65,7 @@ func (b *base) RunPayroll(ec echo.Context, input *request.RunPayroll) error {
 
 	now := time.Now()
 	payrollPeriod.PayrollRunAt = &now
-	_, err = b.repository.UpsertPayrollPeriod(ctx, payrollPeriod)
-	if err != nil {
+	if _, err = b.repository.UpsertPayrollPeriod(ctx, payrollPeriod); err != nil {
 		return err
 	}
 
@@ -76,7 +76,6 @@ func (b *base) RunPayroll(ec echo.Context, input *request.RunPayroll) error {
 // Calculations include attendances, overtimes, and reimbursements pay.
 func (b *base) ProcessPayroll(ec echo.Context, user *domain.User, payrollPeriod *domain.PayrollPeriod) error {
 	ctx := ec.Request().Context()
-
 	authUser := util.EchoCntextAuthUser(ec)
 
 	payslipExists, err := b.repository.FindPayslipByUserIDAndPayrollPeriodID(ctx, user.ID, payrollPeriod.ID)
@@ -139,7 +138,7 @@ func (b *base) ProcessPayroll(ec echo.Context, user *domain.User, payrollPeriod 
 		return err
 	}
 
-	if err = b.payReimbursements(ec, user.ID, payslip.ID); err != nil {
+	if err = b.payReimbursements(tCtx, user.ID, payslip.ID); err != nil {
 		return err
 	}
 
@@ -214,9 +213,7 @@ func (b *base) calculateReimbursementPay(ec echo.Context, user *domain.User) (ui
 }
 
 // payReimbursements processes and marks all pending reimbursements for a user as paid, associating them with a payslip ID.
-func (b *base) payReimbursements(ec echo.Context, userID, payslipID uint64) error {
-	ctx := ec.Request().Context()
-
+func (b *base) payReimbursements(ctx context.Context, userID, payslipID uint64) error {
 	reimbursements, err := b.repository.FindReimbursementsByUserIDAndStatus(ctx, userID, enums.PENDINGReimbursementStatus)
 	if err != nil {
 		return err

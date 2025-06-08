@@ -8,10 +8,10 @@ type RequestLog struct {
 	CreatedAt time.Time
 	UpdatedAt time.Time
 
-	RequestID string
-	UserID    uint64
-	Activity  string
-	Entity    string
-	RefID     uint64
-	ClientIP  string
+	RequestID   string
+	UserID      uint64
+	Activity    string
+	Entity      string
+	ReferenceID uint64
+	ClientIP    string
 }

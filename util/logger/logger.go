@@ -1,6 +1,7 @@
 package logger
 
 import (
+	"github.com/cchristian77/payroll_be/domain/enums"
 	"github.com/labstack/echo/v4"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
@@ -55,6 +56,7 @@ func RequestLog(next echo.HandlerFunc) echo.HandlerFunc {
 		response := ec.Response()
 
 		fields := []zapcore.Field{
+			zap.String("request_id", ec.Get(enums.RequestIDCtxKey).(string)),
 			zap.Int("status", response.Status),
 			zap.String("latency", time.Since(time.Now()).String()),
 			zap.String("method", request.Method),

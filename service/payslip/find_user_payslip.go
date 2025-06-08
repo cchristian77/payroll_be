@@ -47,10 +47,6 @@ func (b *base) EnsurePayrollExecuted(ec echo.Context, payrollPeriodID uint64) (*
 	}
 
 	if payrollPeriod.PayrollRunAt == nil {
-		return nil, sharedErrs.NewBusinessValidationErr("Payroll period is not run yet.")
-	}
-
-	if payrollPeriod.PayrollRunAt == nil {
 		return nil, sharedErrs.NewBusinessValidationErr("Payroll period has not executed yet.")
 	}
 

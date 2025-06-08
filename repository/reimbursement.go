@@ -75,10 +75,13 @@ func (r *repo) UpsertReimbursement(ctx context.Context, data *domain.Reimburseme
 			clause.OnConflict{
 				Columns: []clause.Column{{Name: "id"}},
 				DoUpdates: clause.Assignments(map[string]any{
-					"updated_at":  data.UpdatedAt,
-					"updated_by":  data.UpdatedBy,
-					"description": data.Description,
-					"amount":      data.Amount,
+					"updated_at":    data.UpdatedAt,
+					"updated_by":    data.UpdatedBy,
+					"description":   data.Description,
+					"amount":        data.Amount,
+					"status":        data.Status,
+					"payslip_id":    data.PayslipID,
+					"reimbursed_at": data.ReimbursedAt,
 				}),
 			}).
 		Omit("updated_by").

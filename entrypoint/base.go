@@ -36,6 +36,7 @@ func InitRouter() *echo.Echo {
 		AllowCredentials: false,
 		MaxAge:           300,
 	}))
+	// Setup panic recovery for the router
 	router.Use(middleware.Recover())
 
 	// Config Rate Limiter allows 500 requests/sec

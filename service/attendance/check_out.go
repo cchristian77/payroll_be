@@ -1,20 +1,19 @@
 package attendance
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"github.com/cchristian77/payroll_be/domain"
 	"github.com/cchristian77/payroll_be/response"
 	"github.com/cchristian77/payroll_be/util"
 	sharedErrs "github.com/cchristian77/payroll_be/util/errors"
-	"github.com/labstack/echo/v4"
 	"gorm.io/gorm"
 	"time"
 )
 
-func (b *base) CheckOut(ec echo.Context) (*response.Attendance, error) {
-	ctx := ec.Request().Context()
-	authUser := util.EchoCntextAuthUser(ec)
+func (b *base) CheckOut(ctx context.Context) (*response.Attendance, error) {
+	authUser := util.AuthUserFromCtx(ctx)
 
 	now := time.Now()
 

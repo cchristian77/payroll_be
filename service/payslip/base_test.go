@@ -1,10 +1,11 @@
 package payslip
 
 import (
+	"context"
 	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/cchristian77/payroll_be/domain/enums"
 	"github.com/cchristian77/payroll_be/repository"
 	"github.com/cchristian77/payroll_be/util/mock"
-	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 	"go.uber.org/mock/gomock"
@@ -33,10 +34,10 @@ func TestNewService_Success(t *testing.T) {
 
 type PayslipTestSuite struct {
 	suite.Suite
-	ec      echo.Context
 	repo    *repository.MockRepository
 	writeDB *gorm.DB
 	sqlMock sqlmock.Sqlmock
+	ctx     context.Context
 
 	payslipService Service
 }
@@ -47,8 +48,8 @@ func (suite *PayslipTestSuite) Before(t *testing.T) {
 
 	var err error
 
-	suite.ec = mock.NewEchoContext()
-	suite.ec.Set("auth_user", mock.InitUserDomain())
+	suite.ctx = context.Background()
+	suite.ctx = context.WithValue(suite.ctx, enums.AuthUserCtxKey, mock.InitUserDomain())
 	suite.repo = repository.NewMockRepository(ctrl)
 	suite.writeDB, suite.sqlMock, err = mock.NewMockDB()
 	if err != nil {

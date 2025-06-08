@@ -1,20 +1,19 @@
 package overtime
 
 import (
+	"context"
 	"errors"
 	"github.com/cchristian77/payroll_be/domain"
 	"github.com/cchristian77/payroll_be/request"
 	"github.com/cchristian77/payroll_be/response"
 	"github.com/cchristian77/payroll_be/util"
 	sharedErrs "github.com/cchristian77/payroll_be/util/errors"
-	"github.com/labstack/echo/v4"
 	"gorm.io/gorm"
 	"time"
 )
 
-func (b *base) Upsert(ec echo.Context, input *request.UpsertOvertime) (*response.Overtime, error) {
-	ctx := ec.Request().Context()
-	authUser := util.EchoCntextAuthUser(ec)
+func (b *base) Upsert(ctx context.Context, input *request.UpsertOvertime) (*response.Overtime, error) {
+	authUser := util.AuthUserFromCtx(ctx)
 
 	now := time.Now()
 

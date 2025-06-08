@@ -29,35 +29,29 @@ func (suite *PayrollPeriodTestSuite) Test_Upsert() {
 		{
 			name: "invalid start date",
 			prepareMock: func() {
-				ctx := suite.ec.Request().Context()
-
 				input.StartDate = "invalid_date"
 
-				suite.repo.EXPECT().UpsertPayrollPeriod(ctx, gomock.Any()).Times(0)
+				suite.repo.EXPECT().UpsertPayrollPeriod(suite.ctx, gomock.Any()).Times(0)
 			},
 			wantErr: true,
 		},
 		{
 			name: "invalid end date date",
 			prepareMock: func() {
-				ctx := suite.ec.Request().Context()
-
 				input.StartDate = now.Format(time.DateOnly)
 				input.EndDate = "invalid_date"
 
-				suite.repo.EXPECT().UpsertPayrollPeriod(ctx, gomock.Any()).Times(0)
+				suite.repo.EXPECT().UpsertPayrollPeriod(suite.ctx, gomock.Any()).Times(0)
 			},
 			wantErr: true,
 		},
 		{
 			name: "start date is after end date",
 			prepareMock: func() {
-				ctx := suite.ec.Request().Context()
-
 				input.StartDate = now.Format(time.DateOnly)
 				input.EndDate = now.Add(-30 * 24 * time.Hour).Format(time.DateOnly)
 
-				suite.repo.EXPECT().UpsertPayrollPeriod(ctx, gomock.Any()).Times(0)
+				suite.repo.EXPECT().UpsertPayrollPeriod(suite.ctx, gomock.Any()).Times(0)
 			},
 			wantErr: true,
 		},
@@ -71,7 +65,7 @@ func (suite *PayrollPeriodTestSuite) Test_Upsert() {
 			tc.prepareMock()
 
 			// Act
-			result, err := suite.payrollPeriodService.Upsert(suite.ec, input)
+			result, err := suite.payrollPeriodService.Upsert(suite.ctx, input)
 
 			// Assert
 			assert.Equal(t, tc.wantErr, err != nil, "error expected %v, but actual: %v", tc.wantErr, err)

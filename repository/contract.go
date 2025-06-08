@@ -4,7 +4,6 @@ import (
 	"context"
 	"github.com/cchristian77/payroll_be/domain"
 	"github.com/cchristian77/payroll_be/util"
-	"github.com/labstack/echo/v4"
 	"time"
 )
 
@@ -55,5 +54,5 @@ type Repository interface {
 	CreatePayslip(ctx context.Context, data *domain.Payslip) (*domain.Payslip, error)
 
 	// Request Log
-	CreateRequestLog(ec echo.Context, data *domain.RequestLog) (*domain.RequestLog, error)
+	CreateRequestLog(ctx context.Context, data *domain.RequestLog) (*domain.RequestLog, error)
 }

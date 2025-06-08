@@ -1,12 +1,12 @@
 package middleware
 
 import (
+	"context"
 	"fmt"
 	"github.com/cchristian77/payroll_be/domain/enums"
 	"github.com/cchristian77/payroll_be/service/auth"
 	"github.com/cchristian77/payroll_be/util"
 	sharedErrs "github.com/cchristian77/payroll_be/util/errors"
-	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"net/http"
 	"strings"
@@ -59,6 +59,8 @@ func (a *Authorization) Authenticate() echo.MiddlewareFunc {
 func (a *Authorization) authenticationWithRoles(allowedRoles ...string) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(ec echo.Context) error {
+			ctx := ec.Request().Context()
+
 			// ather token from the header
 			authHeader := ec.Request().Header.Get(authHeaderKey)
 			if authHeader == "" {
@@ -78,7 +80,7 @@ func (a *Authorization) authenticationWithRoles(allowedRoles ...string) echo.Mid
 			bearerToken := authFields[1]
 
 			// authenticate the bearer token
-			authUser, payload, err := a.authService.Authenticate(ec, bearerToken)
+			authUser, payload, err := a.authService.Authenticate(ctx, bearerToken)
 			if err != nil {
 				return err
 			}
@@ -86,9 +88,10 @@ func (a *Authorization) authenticationWithRoles(allowedRoles ...string) echo.Mid
 			// authorization based on the allowed roles from the authenticated user's role
 			// find if user's role contains in the allowed roles
 			if util.Contains(allowedRoles, authUser.Role) {
-				ec.Set(enums.AuthUserCtxKey, authUser)
-				ec.Set(enums.SessionIDCtxKey, payload.ID.String())
-				ec.Set(enums.RequestIDCtxKey, uuid.New().String())
+				ctx = context.WithValue(ctx, enums.AuthUserCtxKey, authUser)
+				ctx = context.WithValue(ctx, enums.SessionIDCtxKey, payload.ID.String())
+				ctx = context.WithValue(ctx, enums.IPAddressCtxKey, ec.RealIP())
+				ec.SetRequest(ec.Request().WithContext(ctx))
 
 				return next(ec)
 			}

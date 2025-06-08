@@ -39,6 +39,8 @@ func InitRouter() *echo.Echo {
 	// Setup panic recovery for the router
 	router.Use(middleware.Recover())
 
+	router.Use(utilMiddleware.RequestID())
+
 	// Config Rate Limiter allows 500 requests/sec
 	router.Use(middleware.RateLimiter(middleware.NewRateLimiterMemoryStore(500)))
 

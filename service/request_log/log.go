@@ -1,26 +1,26 @@
 package request_log
 
 import (
+	"context"
 	"github.com/cchristian77/payroll_be/domain"
 	"github.com/cchristian77/payroll_be/domain/enums"
 	"github.com/cchristian77/payroll_be/util"
-	"github.com/labstack/echo/v4"
 	"time"
 )
 
-func (b *base) Log(ec echo.Context, activity string, referenceID uint64, entity string) (*domain.RequestLog, error) {
-	authUser := util.EchoCntextAuthUser(ec)
+func (b *base) Log(ctx context.Context, activity string, referenceID uint64, entity string) (*domain.RequestLog, error) {
+	authUser := util.AuthUserFromCtx(ctx)
 
 	now := time.Now()
-	requestLog, err := b.repository.CreateRequestLog(ec, &domain.RequestLog{
+	requestLog, err := b.repository.CreateRequestLog(ctx, &domain.RequestLog{
 		CreatedAt:   now,
 		UpdatedAt:   now,
-		RequestID:   ec.Get(enums.RequestIDCtxKey).(string),
+		RequestID:   ctx.Value(enums.RequestIDCtxKey).(string),
 		UserID:      authUser.ID,
 		Activity:    activity,
 		Entity:      entity,
 		ReferenceID: referenceID,
-		ClientIP:    ec.RealIP(),
+		ClientIP:    ctx.Value(enums.IPAddressCtxKey).(string),
 	})
 	if err != nil {
 		return nil, err

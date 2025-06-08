@@ -27,13 +27,12 @@ func (suite *AttendanceServiceTestSuite) Test_CheckOut() {
 		{
 			name: "attendance not found",
 			prepareMock: func() {
-				ctx := suite.ec.Request().Context()
-				authUser := util.EchoCntextAuthUser(suite.ec)
+				authUser := util.AuthUserFromCtx(suite.ctx)
 
-				suite.repo.EXPECT().FindAttendanceByUserIDAndDate(ctx, gomock.Eq(authUser.ID), gomock.Any()).
+				suite.repo.EXPECT().FindAttendanceByUserIDAndDate(suite.ctx, gomock.Eq(authUser.ID), gomock.Any()).
 					Return(nil, gorm.ErrRecordNotFound).
 					Times(1)
-				suite.repo.EXPECT().UpdateAttendance(ctx, gomock.Any()).Times(0)
+				suite.repo.EXPECT().UpdateAttendance(suite.ctx, gomock.Any()).Times(0)
 			},
 			wantErr:       true,
 			expectedError: sharedErrs.NewBusinessValidationErr(fmt.Sprintf("You haven't checked in yet today.")),
@@ -41,15 +40,14 @@ func (suite *AttendanceServiceTestSuite) Test_CheckOut() {
 		{
 			name: "already checked out",
 			prepareMock: func() {
-				ctx := suite.ec.Request().Context()
-				authUser := util.EchoCntextAuthUser(suite.ec)
+				authUser := util.AuthUserFromCtx(suite.ctx)
 
 				attendance.CheckOut = &attendance.CheckIn
 
-				suite.repo.EXPECT().FindAttendanceByUserIDAndDate(ctx, gomock.Eq(authUser.ID), gomock.Any()).
+				suite.repo.EXPECT().FindAttendanceByUserIDAndDate(suite.ctx, gomock.Eq(authUser.ID), gomock.Any()).
 					Return(attendance, nil).
 					Times(1)
-				suite.repo.EXPECT().UpdateAttendance(ctx, gomock.Any()).Times(0)
+				suite.repo.EXPECT().UpdateAttendance(suite.ctx, gomock.Any()).Times(0)
 			},
 			wantErr: true,
 			expectedError: sharedErrs.NewBusinessValidationErr(
@@ -58,19 +56,18 @@ func (suite *AttendanceServiceTestSuite) Test_CheckOut() {
 		{
 			name: "success",
 			prepareMock: func() {
-				ctx := suite.ec.Request().Context()
-				authUser := util.EchoCntextAuthUser(suite.ec)
+				authUser := util.AuthUserFromCtx(suite.ctx)
 
 				attendance.CheckOut = nil
 				expected = response.NewAttendanceFromDomain(attendance)
 
-				suite.repo.EXPECT().FindAttendanceByUserIDAndDate(ctx, gomock.Eq(authUser.ID), gomock.Any()).
+				suite.repo.EXPECT().FindAttendanceByUserIDAndDate(suite.ctx, gomock.Eq(authUser.ID), gomock.Any()).
 					Return(attendance, nil).
 					Times(1)
-				suite.repo.EXPECT().UpdateAttendance(ctx, gomock.Any()).
+				suite.repo.EXPECT().UpdateAttendance(suite.ctx, gomock.Any()).
 					Return(nil).
 					Times(1)
-				suite.repo.EXPECT().FindAttendanceByIDAndUserID(ctx, gomock.Eq(attendance.ID), gomock.Eq(authUser.ID)).
+				suite.repo.EXPECT().FindAttendanceByIDAndUserID(suite.ctx, gomock.Eq(attendance.ID), gomock.Eq(authUser.ID)).
 					Return(attendance, nil).
 					Times(1)
 			},
@@ -85,7 +82,7 @@ func (suite *AttendanceServiceTestSuite) Test_CheckOut() {
 			tc.prepareMock()
 
 			// Act
-			result, err := suite.attendanceService.CheckOut(suite.ec)
+			result, err := suite.attendanceService.CheckOut(suite.ctx)
 
 			// Assert
 			assert.Equal(t, tc.wantErr, err != nil, "error expected %v, but actual: %v", tc.wantErr, err)

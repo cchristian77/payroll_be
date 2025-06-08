@@ -31,15 +31,14 @@ func (suite *ReimbursementServiceTestSuite) Test_Upsert() {
 		{
 			name: "reimbursement not found on update",
 			prepareMock: func() {
-				ctx := suite.ec.Request().Context()
-				authUser := util.EchoCntextAuthUser(suite.ec)
+				authUser := util.AuthUserFromCtx(suite.ctx)
 
 				input.ID = 1
 
-				suite.repo.EXPECT().FindReimbursementByIDAndUserID(ctx, gomock.Eq(input.ID), gomock.Eq(authUser.ID)).
+				suite.repo.EXPECT().FindReimbursementByIDAndUserID(suite.ctx, gomock.Eq(input.ID), gomock.Eq(authUser.ID)).
 					Return(nil, gorm.ErrRecordNotFound).
 					Times(1)
-				suite.repo.EXPECT().UpsertReimbursement(ctx, gomock.Any()).Times(0)
+				suite.repo.EXPECT().UpsertReimbursement(suite.ctx, gomock.Any()).Times(0)
 			},
 			wantErr:       true,
 			expectedError: gorm.ErrRecordNotFound,
@@ -47,16 +46,15 @@ func (suite *ReimbursementServiceTestSuite) Test_Upsert() {
 		{
 			name: "reimbursement is already paid",
 			prepareMock: func() {
-				ctx := suite.ec.Request().Context()
-				authUser := util.EchoCntextAuthUser(suite.ec)
+				authUser := util.AuthUserFromCtx(suite.ctx)
 
 				input.ID = 1
 				reimbursement.Status = enums.PAIDReimbursementStatus
 
-				suite.repo.EXPECT().FindReimbursementByIDAndUserID(ctx, gomock.Eq(input.ID), gomock.Eq(authUser.ID)).
+				suite.repo.EXPECT().FindReimbursementByIDAndUserID(suite.ctx, gomock.Eq(input.ID), gomock.Eq(authUser.ID)).
 					Return(reimbursement, nil).
 					Times(1)
-				suite.repo.EXPECT().UpsertReimbursement(ctx, gomock.Any()).Times(0)
+				suite.repo.EXPECT().UpsertReimbursement(suite.ctx, gomock.Any()).Times(0)
 			},
 			wantErr:       true,
 			expectedError: sharedErrs.NewBusinessValidationErr("Reimbursement has already been paid."),
@@ -64,16 +62,15 @@ func (suite *ReimbursementServiceTestSuite) Test_Upsert() {
 		{
 			name: "success",
 			prepareMock: func() {
-				ctx := suite.ec.Request().Context()
-				authUser := util.EchoCntextAuthUser(suite.ec)
+				authUser := util.AuthUserFromCtx(suite.ctx)
 
 				reimbursement.Status = enums.PENDINGReimbursementStatus
 				expected = response.NewReimbursementFromDomain(reimbursement)
 
-				suite.repo.EXPECT().FindReimbursementByIDAndUserID(ctx, gomock.Eq(authUser.ID), gomock.Any()).
+				suite.repo.EXPECT().FindReimbursementByIDAndUserID(suite.ctx, gomock.Eq(authUser.ID), gomock.Any()).
 					Return(reimbursement, nil).
 					Times(1)
-				suite.repo.EXPECT().UpsertReimbursement(ctx, gomock.Any()).
+				suite.repo.EXPECT().UpsertReimbursement(suite.ctx, gomock.Any()).
 					Return(reimbursement, nil).
 					Times(1)
 			},
@@ -88,7 +85,7 @@ func (suite *ReimbursementServiceTestSuite) Test_Upsert() {
 			tc.prepareMock()
 
 			// Act
-			result, err := suite.reimbursementService.Upsert(suite.ec, input)
+			result, err := suite.reimbursementService.Upsert(suite.ctx, input)
 
 			// Assert
 			assert.Equal(t, tc.wantErr, err != nil, "error expected %v, but actual: %v", tc.wantErr, err)

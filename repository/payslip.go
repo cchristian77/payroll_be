@@ -21,7 +21,7 @@ func (r *repo) FindPayslipByUserIDAndPayrollPeriodID(ctx context.Context, userID
 		First(&data).
 		Error
 	if err != nil {
-		logger.Error(fmt.Sprintf("[REPOSITORY] Failed on find payslip by user id and payslip.go period id : %v", err))
+		logger.Error(ctx, fmt.Sprintf("[REPOSITORY] Failed on find payslip by user id and payslip.go period id : %v", err))
 
 		return nil, err
 	}
@@ -37,7 +37,7 @@ func (r *repo) CreatePayslip(ctx context.Context, data *domain.Payslip) (*domain
 		Create(&data).
 		Error
 	if err != nil {
-		logger.Error(fmt.Sprintf("[REPOSITORY] Failed on create payslip: %v", err))
+		logger.Error(ctx, fmt.Sprintf("[REPOSITORY] Failed on create payslip: %v", err))
 
 		return data, err
 	}
@@ -78,7 +78,7 @@ func (r *repo) FindPayslipPaginated(ctx context.Context, payrollPeriodID uint64,
 	}
 
 	if err := query.Preload("User").Count(&count).Error; err != nil {
-		logger.Error(fmt.Sprintf("[REPOSITORY] Failed on find payslip paginated count on period: %v", err))
+		logger.Error(ctx, fmt.Sprintf("[REPOSITORY] Failed on find payslip paginated count on period: %v", err))
 		return nil, err
 	}
 
@@ -89,7 +89,7 @@ func (r *repo) FindPayslipPaginated(ctx context.Context, payrollPeriodID uint64,
 		Find(&data).
 		Error
 	if err != nil {
-		logger.Error(fmt.Sprintf("[REPOSITORY] Failed on find payslip.go pagionated on period : %v", err))
+		logger.Error(ctx, fmt.Sprintf("[REPOSITORY] Failed on find payslip.go pagionated on period : %v", err))
 
 		return data, err
 	}

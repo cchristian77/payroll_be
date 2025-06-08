@@ -20,7 +20,7 @@ func (r *repo) FindOvertimeByUserIDAndDate(ctx context.Context, userID uint64, d
 		First(&data).
 		Error
 	if err != nil {
-		logger.Error(fmt.Sprintf("[REPOSITORY] Failed on find overtime by user id and date : %v", err))
+		logger.Error(ctx, fmt.Sprintf("[REPOSITORY] Failed on find overtime by user id and date : %v", err))
 
 		return nil, err
 	}
@@ -38,7 +38,7 @@ func (r *repo) FindOvertimeByIDAndUserID(ctx context.Context, id, userID uint64)
 		First(&data).
 		Error
 	if err != nil {
-		logger.Error(fmt.Sprintf("[REPOSITORY] Failed on find overtime by id and user id : %v", err))
+		logger.Error(ctx, fmt.Sprintf("[REPOSITORY] Failed on find overtime by id and user id : %v", err))
 
 		return nil, err
 	}
@@ -56,7 +56,7 @@ func (r *repo) FindOvertimesByUserIDAndDateRange(ctx context.Context, userID uin
 		Find(&data).
 		Error
 	if err != nil {
-		logger.Error(fmt.Sprintf("[REPOSITORY] Failed on find overtimes by id and date range: %v", err))
+		logger.Error(ctx, fmt.Sprintf("[REPOSITORY] Failed on find overtimes by id and date range: %v", err))
 
 		return nil, err
 	}
@@ -83,7 +83,7 @@ func (r *repo) UpsertOvertime(ctx context.Context, data *domain.Overtime) (*doma
 		Create(&data).
 		Error
 	if err != nil {
-		logger.Error(fmt.Sprintf("[REPOSITORY] Failed on upsert overtime : %v", err))
+		logger.Error(ctx, fmt.Sprintf("[REPOSITORY] Failed on upsert overtime : %v", err))
 
 		return data, err
 	}

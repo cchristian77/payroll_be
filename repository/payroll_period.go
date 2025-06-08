@@ -20,7 +20,7 @@ func (r *repo) FindOverlappingPayrollPeriods(ctx context.Context, startDate, end
 		Find(&data).
 		Error
 	if err != nil {
-		logger.Error(fmt.Sprintf("[REPOSITORY] Failed on find overlapping payroll periods : %v", err))
+		logger.Error(ctx, fmt.Sprintf("[REPOSITORY] Failed on find overlapping payroll periods : %v", err))
 
 		return nil, err
 	}
@@ -37,7 +37,7 @@ func (r *repo) FindPayrollPeriodByID(ctx context.Context, id uint64) (*domain.Pa
 		First(&data, id).
 		Error
 	if err != nil {
-		logger.Error(fmt.Sprintf("[REPOSITORY] Failed on find payroll period by id : %v", err))
+		logger.Error(ctx, fmt.Sprintf("[REPOSITORY] Failed on find payroll period by id : %v", err))
 
 		return nil, err
 	}
@@ -65,7 +65,7 @@ func (r *repo) UpsertPayrollPeriod(ctx context.Context, data *domain.PayrollPeri
 		Create(&data).
 		Error
 	if err != nil {
-		logger.Error(fmt.Sprintf("[REPOSITORY] Failed on upsert payroll period : %v", err))
+		logger.Error(ctx, fmt.Sprintf("[REPOSITORY] Failed on upsert payroll period : %v", err))
 
 		return data, err
 	}

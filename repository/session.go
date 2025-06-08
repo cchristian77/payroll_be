@@ -15,7 +15,7 @@ func (r *repo) CreateSession(ctx context.Context, data *domain.Session) (*domain
 		Create(data).
 		Error
 	if err != nil {
-		logger.Error(fmt.Sprintf("[REPOSITORY] Failed on create session : %v", err))
+		logger.Error(ctx, fmt.Sprintf("[REPOSITORY] Failed on create session : %v", err))
 
 		return nil, err
 	}
@@ -33,7 +33,7 @@ func (r *repo) FindSessionBySessionID(ctx context.Context, sessionID string) (*d
 		First(&result).
 		Error
 	if err != nil {
-		logger.Error(fmt.Sprintf("[REPOSITORY] Failed on find session by id : %v", err))
+		logger.Error(ctx, fmt.Sprintf("[REPOSITORY] Failed on find session by id : %v", err))
 
 		return nil, err
 	}
@@ -49,7 +49,7 @@ func (r *repo) DeleteSessionByID(ctx context.Context, id uint64) error {
 		Delete(&domain.Session{}).
 		Error
 	if err != nil {
-		logger.Error(fmt.Sprintf("[REPOSITORY] Failed on delete session by id : %v", err))
+		logger.Error(ctx, fmt.Sprintf("[REPOSITORY] Failed on delete session by id : %v", err))
 
 		return err
 	}

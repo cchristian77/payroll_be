@@ -80,7 +80,7 @@ func (b *base) ProcessPayroll(ctx context.Context, user *domain.User, payrollPer
 	}
 
 	if payslipExists != nil {
-		logger.Info(fmt.Sprintf("payslip.go %d already exists for user %d and payroll period %d",
+		logger.Info(ctx, fmt.Sprintf("payslip.go %d already exists for user %d and payroll period %d",
 			payslipExists.ID, user.ID, payrollPeriod.ID))
 		return nil
 	}
@@ -105,7 +105,7 @@ func (b *base) ProcessPayroll(ctx context.Context, user *domain.User, payrollPer
 	tCtx, tx := database.InitTx(ctx, b.writeDB)
 	defer func() {
 		if err := tx.Rollback().Error; err != nil && !errors.Is(err, sql.ErrTxDone) {
-			logger.Error(fmt.Sprintf("[REPOSITORY] Error on ProcessPayroll func: ROLLBACK TXN: %v", err))
+			logger.Error(ctx, fmt.Sprintf("[REPOSITORY] Error on ProcessPayroll func: ROLLBACK TXN: %v", err))
 		}
 	}()
 
@@ -139,7 +139,7 @@ func (b *base) ProcessPayroll(ctx context.Context, user *domain.User, payrollPer
 	}
 
 	if err = tx.Commit().Error; err != nil {
-		logger.Error(fmt.Sprintf("[REPOSITORY] Error on RunPayroll func: COMMIT TXN: %v", err))
+		logger.Error(ctx, fmt.Sprintf("[REPOSITORY] Error on RunPayroll func: COMMIT TXN: %v", err))
 		return err
 	}
 

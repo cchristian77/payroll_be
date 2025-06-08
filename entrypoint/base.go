@@ -70,12 +70,12 @@ func registerRoutes(router *echo.Echo) {
 	// initialize DB
 	db := database.ConnectToDB()
 	if db == nil {
-		logger.Fatal("Can't connect to Postgres!")
+		logger.L().Fatal("Can't connect to Postgres!")
 	}
 
 	gormDB, err := database.OpenGormDB(db)
 	if err != nil {
-		logger.Fatal(fmt.Sprintf("gorm driver errror: %v", err))
+		logger.L().Fatal(fmt.Sprintf("gorm driver errror: %v", err))
 	}
 
 	repository := repository.NewRepository(gormDB)
@@ -83,32 +83,32 @@ func registerRoutes(router *echo.Echo) {
 	// Initialize all service layers
 	authService, err := auth.NewService(repository, gormDB)
 	if err != nil {
-		logger.Fatal(fmt.Sprintf("auth service initialization error: %v", err))
+		logger.L().Fatal(fmt.Sprintf("auth service initialization error: %v", err))
 	}
 
 	attendanceService, err := attendance.NewService(repository, gormDB)
 	if err != nil {
-		logger.Fatal(fmt.Sprintf("attendance service initialization error: %v", err))
+		logger.L().Fatal(fmt.Sprintf("attendance service initialization error: %v", err))
 	}
 
 	overtimeService, err := overtime.NewService(repository, gormDB)
 	if err != nil {
-		logger.Fatal(fmt.Sprintf("overtime service initialization error: %v", err))
+		logger.L().Fatal(fmt.Sprintf("overtime service initialization error: %v", err))
 	}
 
 	reimbursementService, err := reimbursement.NewService(repository, gormDB)
 	if err != nil {
-		logger.Fatal(fmt.Sprintf("reimbursement service initialization error: %v", err))
+		logger.L().Fatal(fmt.Sprintf("reimbursement service initialization error: %v", err))
 	}
 
 	payrollPeriodService, err := payrollPeriod.NewService(repository, gormDB)
 	if err != nil {
-		logger.Fatal(fmt.Sprintf("payroll period service initialization error: %v", err))
+		logger.L().Fatal(fmt.Sprintf("payroll period service initialization error: %v", err))
 	}
 
 	payslipService, err := payslip.NewService(repository, gormDB)
 	if err != nil {
-		logger.Fatal(fmt.Sprintf("payslip.go service initialization error: %v", err))
+		logger.L().Fatal(fmt.Sprintf("payslip.go service initialization error: %v", err))
 	}
 
 	utilMiddleware.InitAuthorization(authService)
